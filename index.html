@@ -295,6 +295,20 @@ button.link.wl{margin-left:auto;margin-right:auto;font-size:14px}
 .ph-add span{font-size:28px;line-height:1}
 .ph-add small{font-size:12px;font-weight:600}
 .ph-del{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#FFFFFF;cursor:pointer}
+/* База клиентов */
+.cl-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.cl-stats div{background:var(--surface);border:1px solid var(--card-b);box-shadow:var(--shadow);border-radius:var(--r-sm);padding:10px 12px}
+.cl-stats b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.cl-stats small{color:var(--muted);font-size:12px}
+input[type=search]{-webkit-appearance:none;appearance:none}
+.cl{background:var(--surface);border:1px solid var(--card-b);box-shadow:var(--shadow);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.cl-top{display:flex;align-items:center;gap:12px}
+.ava2{width:42px;height:42px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:var(--soft);color:var(--accent);font-weight:800;font-size:17px}
+.cl-main{flex:1 1 auto;min-width:0}.cl-main b{display:block;font-size:16px}.cl-main small{color:var(--muted);font-size:13px}
+.cl-sum{text-align:right;flex:0 0 auto}.cl-sum b{display:block;font-variant-numeric:tabular-nums}.cl-sum small{color:var(--muted);font-size:11px}
+.cl-tags{display:flex;gap:6px;flex-wrap:wrap}.cl-tags .pill{align-self:auto}
+.cl-act{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+.cl-act a{color:var(--accent);font-weight:600;text-decoration:none;font-variant-numeric:tabular-nums}
 /* Скромная строчка внизу: раскрывается только по нажатию */
 .credit{margin-top:36px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center}
 .credit details{width:100%}
@@ -309,7 +323,7 @@ button.link.wl{margin-left:auto;margin-right:auto;font-size:14px}
 @media (max-width:380px){.credit-list{grid-template-columns:1fr}}
 .credit-list li{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;min-width:0}
 .credit-list svg{flex:0 0 auto;color:var(--accent);width:16px;height:16px;margin-top:1px}
-.credit-btn{display:block;text-align:center;padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.credit-btn{width:100%;font:inherit;cursor:pointer;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);display:block;text-align:center;padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
 .credit-by{color:var(--muted);font-size:11px;opacity:.8}
 @media (prefers-reduced-motion:no-preference){#view>*{animation:rise .18s ease}@keyframes rise{from{transform:translateY(5px)}}}
 </style>
@@ -353,8 +367,10 @@ button.link.wl{margin-left:auto;margin-right:auto;font-size:14px}
       <div class="credit-body">
         <p class="credit-lead">Онлайн-запись в Telegram для барберов, мастеров маникюра, бровей, массажа и салонов.</p>
         <ul class="credit-list"><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Онлайн-запись 24/7 прямо в Telegram</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Напоминания клиентам перед визитом</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Подтверждение визита в одно касание</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Маршрут на карте до двери</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Расписание и цены меняются с телефона</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Переписка с клиентами через бота</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Отзывы клиентов и фото работ</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ваше фото, цвета и название</span></li></ul>
-        <a class="credit-btn" id="creditBtn" target="_blank" rel="noopener" hidden>Написать разработчику</a>
-        <small class="muted" id="creditHandle" style="text-align:center;font-size:12px" hidden></small>
+        <button class="credit-btn" id="creditLead" type="button">Оставить заявку</button>
+        <p class="okmsg" id="creditOk" hidden style="text-align:center;margin:0">Заявка отправлена. Разработчик напишет вам в Telegram.</p>
+        <p class="err" id="creditErr" hidden style="text-align:center;margin:0;font-size:13px"></p>
+        <small class="muted" style="text-align:center;font-size:12px">или напишите сами: <a id="creditBtn" target="_blank" rel="noopener">@Vladisslav_K</a></small>
       </div>
     </details>
     <small class="credit-by" id="creditBy" hidden></small>
@@ -464,6 +480,17 @@ async function mock(action, p){
     const [done, revenue, upcoming, newClients, cancelled, noShows] = base;
     return { month:p.month, currency:'BYN', done, revenue, expected: upcoming * 32, upcoming, newClients, clients: Math.round(done * 0.8), cancelled, noShows, rating:4.9, ratingCount:37,
       services: done ? [{ name:'Мужская стрижка', n: Math.round(done * .62) }, { name:'Стрижка + борода', n: Math.round(done * .27) }, { name:'Детская стрижка', n: done - Math.round(done * .62) - Math.round(done * .27) }] : [] };
+  }
+  if (action === 'lead') return { ok:true };
+  if (action === 'admin_clients') {
+    const d = n => { const x = new Date(); x.setDate(x.getDate() + n); return isoOf(x); };
+    return { currency:'BYN', today:d(0), clients:[
+      { name:'Артём', phone:'+375 29 555-12-34', username:'artem_k', visits:6, spent:180, last:d(-9), first:d(-160), next:d(2) + ' 12:00', noShows:0 },
+      { name:'Павел', phone:'+375 33 410-55-66', username:'', visits:8, spent:290, last:d(-12), first:d(-200), next:'', noShows:0 },
+      { name:'Игорь', phone:'+375 29 300-11-22', username:'igor_g', visits:1, spent:30, last:d(-3), first:d(-3), next:'', noShows:0 },
+      { name:'Максим', phone:'+375 33 777-45-10', username:'', visits:4, spent:165, last:d(-18), first:d(-120), next:d(5) + ' 17:00', noShows:1 },
+      { name:'Денис', phone:'+375 44 120-88-61', username:'dima_92', visits:3, spent:75, last:d(-45), first:d(-150), next:'', noShows:0 },
+      { name:'Никита', phone:'+375 25 640-19-07', username:'', visits:2, spent:60, last:d(-52), first:d(-90), next:'', noShows:0 } ] };
   }
   if (action === 'admin_reviews') return { reviews: DEMO_REVIEWS.map(r => ({ ...r, hidden: DEMO_RHIDE.includes(r.id) })), photos: DEMO_PHOTOS };
   if (action === 'admin_review_hide') { DEMO_RHIDE = p.hidden ? [...DEMO_RHIDE, p.id] : DEMO_RHIDE.filter(x => x !== p.id); mem.set('demo-rhide', DEMO_RHIDE); return { ok:true }; }
@@ -778,7 +805,7 @@ const plural = (n, a, b, c) => n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 
 
 function renderAdmin(v){
   const A = S.adm;
-  const SECS = [['bookings','Записи'],['schedule','Расписание'],['services','Услуги'],['notify','Уведомления'],['reviews','Отзывы и фото'],['stats','Статистика']];
+  const SECS = [['bookings','Записи'],['clients','Клиенты'],['schedule','Расписание'],['services','Услуги'],['notify','Уведомления'],['reviews','Отзывы и фото'],['stats','Статистика']];
   const nav = `${DEMO ? '<div class="demo">Эту вкладку в рабочей версии видит только Илья: приложение узнаёт его по Telegram-аккаунту.</div>' : ''}
     <div class="subnav" role="group" aria-label="Разделы управления">${SECS.map(([k, n]) => `<button data-sec="${k}" aria-pressed="${A.sec === k}">${n}</button>`).join('')}</div>
     ${A.err ? `<p class="err">${esc(A.err)}</p>` : ''}`;
@@ -788,6 +815,10 @@ function renderAdmin(v){
   if (A.sec === 'schedule') {
     if (!A.sch) { loading('Загружаем расписание…'); api('admin_schedule').then(r => { A.sch = r; render(); }).catch(e => { A.err = e.message; A.sec = 'bookings'; render(); }); return; }
     return renderSchedule(v, nav, bindNav);
+  }
+  if (A.sec === 'clients') {
+    if (!A.cl) { loading('Собираем базу клиентов…'); api('admin_clients').then(r => { A.cl = r; render(); }).catch(e => { A.err = e.message; A.sec = 'bookings'; render(); }); return; }
+    return renderClients(v, nav, bindNav);
   }
   if (A.sec === 'stats') {
     if (!A.statMonth) A.statMonth = isoOf(new Date()).slice(0, 7);
@@ -947,6 +978,47 @@ function renderAdmin(v){
       render();
     };
   }
+}
+
+function renderClients(v, nav, bindNav){
+  const A = S.adm, C = A.cl, today = C.today || isoOf(new Date());
+  const daysSince = iso => iso ? Math.round((dt(today) - dt(iso)) / 864e5) : 9999;
+  const q = (A.clQ || '').trim().toLowerCase(), f = A.clF || 'all';
+  const isRegular = c => c.visits >= 3, isLost = c => !c.next && c.visits > 0 && daysSince(c.last) > 35;
+  const list = C.clients.filter(c => (!q || (c.name + ' ' + c.phone + ' ' + c.username).toLowerCase().includes(q))
+    && (f === 'all' || (f === 'reg' && isRegular(c)) || (f === 'lost' && isLost(c))));
+  const money = n => String(n).replace('.', ',') + ' ' + C.currency;
+  const fmtNext = n => { const [d, t] = n.split(' '); const x = dt(d); return x.getDate() + ' ' + MON[x.getMonth()].slice(0, 3) + ', ' + t; };
+  const card = c => {
+    const tags = [];
+    if (c.next) tags.push(`<span class="pill ok">Записан · ${fmtNext(c.next)}</span>`);
+    if (isLost(c)) tags.push(`<span class="pill wait">Давно не был · ${Math.floor(daysSince(c.last) / 7)} нед.</span>`);
+    if (c.visits <= 1 && daysSince(c.first) <= 30) tags.push('<span class="pill">Новый клиент</span>');
+    if (c.noShows) tags.push(`<span class="pill warn">Не пришёл ${c.noShows} ${plural(c.noShows, 'раз', 'раза', 'раз')}</span>`);
+    const last = c.last ? 'был ' + human(c.last).split(',')[0] : 'ещё не был';
+    return `<div class="cl">
+      <div class="cl-top"><div class="ava2" aria-hidden="true">${esc((c.name || '?').trim().charAt(0).toUpperCase())}</div>
+        <div class="cl-main"><b>${esc(c.name || 'Без имени')}</b><small>${c.visits} ${plural(c.visits, 'визит', 'визита', 'визитов')} · ${last}</small></div>
+        <div class="cl-sum"><b>${money(c.spent)}</b><small>за всё время</small></div></div>
+      ${tags.length ? `<div class="cl-tags">${tags.join('')}</div>` : ''}
+      <div class="cl-act">${c.phone ? `<a href="tel:${esc(String(c.phone).replace(/[^\d+]/g, ''))}">${esc(c.phone)}</a>` : ''}
+        ${c.username ? `<a href="https://t.me/${esc(c.username)}" data-tg="${esc(c.username)}">@${esc(c.username)}</a>` : ''}</div>
+    </div>`;
+  };
+  const reg = C.clients.filter(isRegular).length, lost = C.clients.filter(isLost).length;
+  v.innerHTML = nav + `${DEMO ? '<div class="demo">Клиенты в демо — примеры.</div>' : ''}
+    <h2>База клиентов</h2>
+    <p class="hint">Собирается сама из записей: телефоны, история визитов, кто давно не приходил.</p>
+    <div class="cl-stats"><div><b>${C.clients.length}</b><small>всего</small></div><div><b>${reg}</b><small>постоянных</small></div><div><b>${lost}</b><small>давно не были</small></div></div>
+    <input id="clQ" type="search" placeholder="Поиск по имени или телефону" value="${esc(A.clQ || '')}" aria-label="Поиск клиента">
+    <div class="seg" role="group" aria-label="Фильтр" style="padding:10px 0 4px">
+      <button data-cf="all" aria-pressed="${f === 'all'}">Все</button><button data-cf="reg" aria-pressed="${f === 'reg'}">Постоянные</button><button data-cf="lost" aria-pressed="${f === 'lost'}">Давно не были</button></div>
+    <div class="list" id="clList">${list.length ? list.map(card).join('') : '<p class="muted">Никого не нашли.</p>'}</div>`;
+  bindNav();
+  const qi = $('#clQ');
+  qi.oninput = () => { A.clQ = qi.value; const pos = qi.selectionStart; render(); const n = $('#clQ'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } };
+  v.querySelectorAll('[data-cf]').forEach(b => b.onclick = () => { A.clF = b.dataset.cf; render(); });
+  v.querySelectorAll('[data-tg]').forEach(a => a.onclick = e => { e.preventDefault(); openTgLink('https://t.me/' + a.dataset.tg); });
 }
 
 function renderStats(v, nav, bindNav){
@@ -1126,7 +1198,7 @@ function goBack(){ S.msg = ''; S.step = S.step === 'form' ? 'slot' : 'service'; 
 function switchTab(t){
   S.tab = t; S.msg = ''; S.confirm = null;
   if (t === 'mine') S.mine = null;
-  if (t === 'admin') Object.assign(S.adm, { list:null, set:null, open:null, cancel:null, sent:null, saved:false, err:'', svcs:null, svcSaved:false, sch:null, dd:null, daySaved:null, week:null, weekSaved:false, stats:null, rv:null });
+  if (t === 'admin') Object.assign(S.adm, { cl:null, list:null, set:null, open:null, cancel:null, sent:null, saved:false, err:'', svcs:null, svcSaved:false, sch:null, dd:null, daySaved:null, week:null, weekSaved:false, stats:null, rv:null });
   if (t === 'book' && S.step === 'done') S.step = 'service';
   if (t !== 'book' && S.resched) { S.resched = null; S.step = 'service'; }
   render();
@@ -1180,10 +1252,18 @@ function applyCfg(c){
     };
   } else $('#qCall').hidden = true;
   if (CREDIT_URL) {
-    const cb = $('#creditBtn'); cb.href = CREDIT_URL; cb.hidden = false;
+    const cb = $('#creditBtn'); cb.href = CREDIT_URL; cb.textContent = CREDIT_NAME;
     cb.onclick = e => { e.preventDefault(); openTgLink(CREDIT_URL); };
     $('#creditBy').textContent = 'Сделано ' + CREDIT_NAME; $('#creditBy').hidden = false;
-    $('#creditHandle').textContent = 'Или найдите в Telegram: ' + CREDIT_NAME; $('#creditHandle').hidden = false;
+    $('#creditLead').onclick = async e => {
+      const btn = e.currentTarget; btn.disabled = true; btn.textContent = 'Отправляем…'; $('#creditErr').hidden = true;
+      try {
+        const w = liveTg();
+        if (w && w.initDataUnsafe && w.initDataUnsafe.user && !w.initDataUnsafe.user.allows_write_to_pm && w.requestWriteAccess) await new Promise(r => w.requestWriteAccess(() => r()));
+        await api('lead', {});
+        btn.hidden = true; $('#creditOk').hidden = false;
+      } catch (ex) { btn.disabled = false; btn.textContent = 'Оставить заявку'; $('#creditErr').textContent = ex.message; $('#creditErr').hidden = false; }
+    };
   }
   saveCfg(c);
   if (S.tab === 'book' && S.step === 'slot' && S.service && c.avail) {
