@@ -8,6 +8,8 @@
 <body>
 <title>Илья Барбер</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Oswald:wght@500;600&family=Playfair+Display:ital,wght@0,600;1,500&family=Manrope:wght@400;600;700&display=swap">
 <style>
 /* Layout: one narrow column like a booking card; steps replace each other, tabs on top */
@@ -553,12 +555,45 @@ function renderService(v){
   v.querySelectorAll('[data-ph]').forEach(b => b.onclick = () => openPhoto(+b.dataset.ph));
   v.querySelectorAll('.svc').forEach(b => b.onclick = () => {
     S.service = S.cfg.services[+b.dataset.i]; S.step = 'slot'; S.time = null; S.msg = '';
-    if (!S.date || !S.cfg.days.some(d => d.date === S.date && d.open)) S.date = (S.cfg.days.find(d => d.open) || {}).date;
+    const today = masterNow().iso;
+    if (!S.date || S.date < today || !S.cfg.days.some(d => d.date === S.date && d.open)) S.date = (S.cfg.days.find(d => d.open && d.date >= today) || {}).date;
     loadSlots();
   });
 }
 
+/* Время «по Минску» (часовой пояс мастера), чтобы окна считались одинаково у всех клиентов */
+function masterNow(){
+  const tz = S.cfg && typeof S.cfg.tz === 'number' ? S.cfg.tz : -new Date().getTimezoneOffset();
+  const d = new Date(Date.now() + tz * 60000);
+  return { iso: d.toISOString().slice(0, 10), min: d.getUTCHours() * 60 + d.getUTCMinutes() };
+}
+function localSlots(date, svc, excludeId){
+  const a = S.cfg.avail[date];
+  if (!a) return [];
+  const now = masterNow();
+  if (date < now.iso) return [];
+  const minStart = date === now.iso ? now.min + (S.cfg.lead || 0) : -1;
+  let busy = a.b;
+  if (excludeId && S.resched && S.resched.date === date) busy = busy.filter(([x, y]) => !(x === mm(S.resched.time) && y === mm(S.resched.end)));
+  return a.s.filter(m => m >= minStart && !busy.some(([x, y]) => m < y && m + svc.dur > x)).map(hm);
+}
+/* Свежие данные в фоне + память на телефоне */
+function saveCfg(c){ try { localStorage.setItem('cfg-cache', JSON.stringify({ at: Date.now(), c })); } catch (e) {} }
+function readCfg(){ try { const v = JSON.parse(localStorage.getItem('cfg-cache') || 'null'); return v && Date.now() - v.at < 7 * 864e5 ? v.c : null; } catch (e) { return null; } }
+let cfgReq = null;
+function refreshCfg(){
+  if (DEMO) return Promise.resolve(S.cfg);
+  if (cfgReq) return cfgReq;
+  cfgReq = api('config').then(c => { cfgReq = null; applyCfg(c); return c; }).catch(e => { cfgReq = null; throw e; });
+  return cfgReq;
+}
+
 function loadSlots(){
+  if (S.cfg && S.cfg.avail && S.service && S.date) {
+    S.slots = localSlots(S.date, S.service, S.resched && S.resched.id);
+    render();
+    return;
+  }
   S.slots = null; render();
   if (!S.date) { S.slots = []; render(); return; }
   const id = ++slotReq;
@@ -579,7 +614,7 @@ function renderSlot(v){
     : `<button class="${S.slots.length ? 'link plain wl' : 'btn2 wl wl-big'}" id="waitBtn">🔔 ${S.slots.length ? 'Нет удобного времени? Сообщить, если освободится' : 'Сообщить, если освободится'}</button>`;
   v.innerHTML = `${S.resched ? reschedBanner() : ''}<button class="back" id="back">← ${S.resched ? 'Отменить перенос' : esc(S.service.name) + ' · ' + dur(S.service.dur) + ' · ' + esc(S.service.price)}</button>
     <h2>Дата и время</h2>
-    <div class="days">${S.cfg.days.map(d => { const x = dt(d.date); return `<button class="day" data-d="${d.date}" ${d.open ? '' : 'disabled'} aria-pressed="${d.date === S.date}" aria-label="${human(d.date)}"><small>${DOW[x.getDay()]}</small><b>${x.getDate()}</b></button>`; }).join('')}</div>
+    <div class="days">${S.cfg.days.filter(d => d.date >= masterNow().iso).map(d => { const x = dt(d.date); return `<button class="day" data-d="${d.date}" ${d.open ? '' : 'disabled'} aria-pressed="${d.date === S.date}" aria-label="${human(d.date)}"><small>${DOW[x.getDay()]}</small><b>${x.getDate()}</b></button>`; }).join('')}</div>
     ${S.date ? `<div class="dlabel">${human(S.date)}</div>` : ''}
     ${S.msg ? `<p class="err">${esc(S.msg)}</p>` : ''}
     ${slots}${wl}`;
@@ -630,10 +665,11 @@ function renderForm(v){
       const r = await api('book', { service: S.service.name, date: S.date, time: S.time, name, phone });
       mem.set('client', { name, phone });
       S.last = r.booking; S.step = 'done'; S.msg = ''; S.mine = null;
+      refreshCfg().catch(() => {});
       if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       render();
     } catch (ex) {
-      if (ex.taken) { S.step = 'slot'; S.msg = ex.message; loadSlots(); return; }
+      if (ex.taken) { S.step = 'slot'; S.msg = ex.message; refreshCfg().catch(() => {}).then(loadSlots); return; }
       btn.disabled = false; btn.textContent = 'Записаться на ' + S.time; fail(ex.message);
     }
   };
@@ -658,8 +694,9 @@ function renderResched(v){
     try {
       await api('reschedule', { id: o.id, date: S.date, time: S.time });
       S.last = { ...o, date: S.date, time: S.time, end: endT, moved: true }; S.resched = null; S.step = 'done'; S.mine = null; S.msg = '';
+      refreshCfg().catch(() => {});
       if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    } catch (ex) { if (ex.taken) { S.step = 'slot'; S.msg = ex.message; loadSlots(); return; } S.msg = ex.message; }
+    } catch (ex) { if (ex.taken) { S.step = 'slot'; S.msg = ex.message; refreshCfg().catch(() => {}).then(loadSlots); return; } S.msg = ex.message; }
     render();
   };
 }
@@ -710,7 +747,7 @@ function renderMine(v){
   v.querySelectorAll('[data-no]').forEach(b => b.onclick = () => { S.confirm = null; render(); });
   v.querySelectorAll('[data-yes]').forEach(b => b.onclick = async () => {
     b.disabled = true; b.textContent = 'Отменяем…';
-    try { await api('cancel', { id: b.dataset.yes }); S.confirm = null; S.mine = null; S.msg = ''; }
+    try { await api('cancel', { id: b.dataset.yes }); S.confirm = null; S.mine = null; S.msg = ''; refreshCfg().catch(() => {}); }
     catch (e) { S.msg = e.message; }
     render();
   });
@@ -1098,7 +1135,7 @@ if (DEMO) {
 } else applySkin(SKIN);
 
 $('#demoNote').hidden = !DEMO;
-api('config').then(c => {
+function applyCfg(c){
   S.cfg = c;
   $('#tAdmin').hidden = !(c.isAdmin || DEMO);
   $('#hTitle').textContent = c.title;
@@ -1129,8 +1166,16 @@ api('config').then(c => {
     cb.onclick = e => { if (tg) { e.preventDefault(); tg.openTelegramLink(CREDIT_URL); } };
     $('#creditBy').textContent = 'Сделано ' + CREDIT_NAME; $('#creditBy').hidden = false;
   }
+  saveCfg(c);
+  if (S.tab === 'book' && S.step === 'slot' && S.service && c.avail) {
+    const svc = c.services.find(x => x.name === S.service.name);
+    if (svc) { S.service = svc; S.slots = localSlots(S.date, svc, S.resched && S.resched.id); }
+  }
   render();
-}).catch(e => { S.msg = 'Не удалось загрузить расписание. ' + e.message; render(); });
+}
+const cached = DEMO ? null : readCfg();
+if (cached) applyCfg(cached);
+api('config').then(applyCfg).catch(e => { if (!S.cfg) { S.msg = 'Не удалось загрузить расписание. ' + e.message; render(); } });
 render();
 }
 </script>
@@ -1145,7 +1190,7 @@ render();
     t.async = true; t.onload = go; t.onerror = go;
     document.head.appendChild(t);
   } catch (e) { go(); }
-  setTimeout(go, 2000);
+  setTimeout(go, 1200);
 })();
 </script>
 
