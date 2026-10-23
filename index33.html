@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Илья Барбер</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Oswald:wght@500;600&family=Playfair+Display:ital,wght@0,600;1,500&family=Manrope:wght@400;600;700&display=swap">
+<style>
+/* Layout: one narrow column like a booking card; steps replace each other, tabs on top */
+:root{
+  --bg:#F2F4F3; --surface:#FFFFFF; --ink:#131A19; --muted:#62706D; --line:#E1E6E4;
+  --accent:#1E6B64; --accent-ink:#FFFFFF; --soft:#DCEDE9; --err:#B3261E; --ok:#1F7A4D;
+  --hero-1:#1F6E66; --hero-2:#0E4743; --card-b:transparent;
+  --shadow:0 1px 2px rgba(19,26,25,.05),0 8px 24px rgba(19,26,25,.07);
+  --display:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:20px; --r-sm:14px; --h1:26px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1312; --surface:#161F1E; --ink:#E7EEEC; --muted:#92A19E; --line:#24302E;
+  --accent:#5BC0B2; --accent-ink:#05201D; --soft:#14332F; --err:#F2867D; --ok:#5CCB91;
+  --hero-1:#1B5049; --hero-2:#0F302D; --card-b:#22302D; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1312; --surface:#161F1E; --ink:#E7EEEC; --muted:#92A19E; --line:#24302E;
+  --accent:#5BC0B2; --accent-ink:#05201D; --soft:#14332F; --err:#F2867D; --ok:#5CCB91;
+  --hero-1:#1B5049; --hero-2:#0F302D; --card-b:#22302D; --shadow:none; color-scheme:dark}
+/* ----- Варианты дизайна (идут после темы, поэтому перекрывают её) ----- */
+/* Барбершоп: чёрный, красный, полосы барберского столба */
+:root[data-skin="pole"]{--card-b:var(--line);--shadow:none;--display:"Oswald","Arial Narrow",Impact,sans-serif;--bg:#0E0E0F;--surface:#19191B;--ink:#F5F3EF;--muted:#9D9A95;--line:#2D2D30;--accent:#D7262E;--accent-ink:#FFFFFF;--soft:#3A1416;--err:#FF7A72;--ok:#4FD08B;--r:4px;--r-sm:3px;--h1:32px;color-scheme:dark}
+/* Винтаж: бутылочно-зелёный, латунь, шрифт с засечками */
+:root[data-skin="vintage"]{--card-b:var(--line);--shadow:none;--bg:#13221B;--surface:#1B2F26;--ink:#EFE6D2;--muted:#A8B2A2;--line:#2D4539;--accent:#C9A45C;--accent-ink:#13221B;--soft:#2A3A2A;--err:#F0937F;--ok:#8FD1A4;--display:"Playfair Display",Georgia,"Times New Roman",serif;--r:18px;--r-sm:12px;--h1:30px;color-scheme:dark}
+/* Минимал: белый лист, крупный чёрный шрифт, острые углы */
+:root[data-skin="paper"]{--card-b:var(--surface);--shadow:none;--bg:#FFFFFF;--surface:#F3F4F6;--ink:#0B0B0C;--muted:#6B6F76;--line:#E2E4E8;--accent:#0B0B0C;--accent-ink:#FFFFFF;--soft:#EDEEF1;--err:#C62828;--ok:#16794A;--r:0px;--r-sm:0px;--h1:38px;color-scheme:light}
+.stripe{display:none}
+[data-skin="pole"] .stripe{display:block;height:8px;margin-top:16px;background:repeating-linear-gradient(-45deg,var(--accent) 0 12px,#F5F3EF 12px 24px,#1E3FA8 24px 36px,#F5F3EF 36px 48px)}
+[data-skin="pole"] h1{letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+[data-skin="pole"] .done h3{text-transform:uppercase}
+[data-skin="pole"] h2{color:var(--ink);border-left:4px solid var(--accent);padding-left:10px;text-transform:uppercase;letter-spacing:.08em;font-size:15px;font-weight:500}
+[data-skin="pole"] .tabs button[aria-selected="true"]{background:var(--accent);color:#FFFFFF}
+[data-skin="vintage"] h1{text-transform:none;letter-spacing:0}
+[data-skin="vintage"] h2{font-style:italic;font-weight:500;text-transform:none;letter-spacing:0;font-size:19px;color:var(--accent)}
+[data-skin="vintage"] .stripe{display:block;height:5px;margin-top:16px;border-top:1px solid var(--accent);border-bottom:1px solid var(--accent);opacity:.6}
+[data-skin="vintage"] .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+[data-skin="vintage"] .done h3,[data-skin="vintage"] .bk-time,[data-skin="vintage"] .day b{text-transform:none}
+[data-skin="paper"] .mark{border-radius:0;box-shadow:none;margin:0;width:64px;height:64px}
+[data-skin="paper"] h1{letter-spacing:-.01em;line-height:1}
+[data-skin="paper"] .top{padding-bottom:14px;border-bottom:2px solid var(--ink)}
+[data-skin="paper"] .tabs{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:18px;justify-content:flex-start}
+[data-skin="paper"] .tabs button{flex:0 0 auto;border-radius:0;padding:10px 0;border-bottom:2px solid transparent;margin-bottom:-1px}
+[data-skin="paper"] .tabs button[aria-selected="true"]{background:none;color:var(--ink);border-bottom-color:var(--ink)}
+[data-skin="paper"] .svc,[data-skin="paper"] .bk,[data-skin="paper"] .summary,[data-skin="paper"] .panel{border-color:var(--surface)}
+[data-skin="paper"] h2{color:var(--ink)}
+.skins{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:16px;padding:8px;border:1px dashed var(--line);border-radius:var(--r-sm)}
+.skins span{font-size:12px;color:var(--muted);margin-right:2px}
+.skins button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.skins button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+select{font:inherit;padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+.ed{padding:12px 16px 8px;display:flex;flex-direction:column;gap:4px}
+.ed.off{opacity:.6}
+.ed label{margin-top:4px}
+.ed input,.ed select{background:var(--bg)}
+.ed-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ed-row>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ed .sw{border-bottom:0;padding:10px 0 4px}
+.ed .link{align-self:flex-start;padding:4px 0 6px;font-size:14px}
+.add{margin-top:10px;width:100%;padding:12px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+.app{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 32px}
+.top{display:flex;gap:14px;align-items:center}
+.mark{width:56px;height:56px;border-radius:50%;flex:0 0 auto;object-fit:cover;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent);margin:4px}
+h1{font-family:var(--display);font-weight:700;font-size:var(--h1);letter-spacing:-.015em;margin:0;line-height:1.1;text-wrap:balance}
+.addr{color:var(--muted);font-size:13px;margin-top:4px;text-decoration:none;display:inline-flex;gap:5px;align-items:center}
+a.addr{color:var(--accent);font-weight:600}
+.addr svg{flex:0 0 auto}
+.maplink{color:var(--accent);font-weight:700;text-decoration:none;display:block;margin-top:2px}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;margin:18px 0 6px}
+.tabs button{flex:1;border:0;border-radius:calc(var(--r-sm) - 2px);background:none;color:var(--muted);font:inherit;font-weight:600;padding:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.demo{font-size:12px;color:var(--muted);background:var(--soft);border-radius:var(--r-sm);padding:8px 12px;margin-top:10px}
+h2{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em;color:var(--ink);margin:26px 0 12px}
+.list{display:flex;flex-direction:column;gap:8px}
+.svc{display:flex;justify-content:space-between;gap:12px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;font:inherit;color:inherit;cursor:pointer}
+.svc:hover{border-color:var(--accent)}
+.svc-main{min-width:0}.svc-main b{display:block;font-size:16px}
+.svc small{display:block;color:var(--muted);font-size:13px}
+.svc-meta{text-align:right;flex:0 0 auto}.svc-meta b{display:block;font-variant-numeric:tabular-nums}
+.back{border:0;background:none;color:var(--accent);font:inherit;font-weight:600;padding:0;cursor:pointer;margin-top:18px}
+.days{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+.day{flex:0 0 52px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-sm);padding:8px 0;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.day small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.day b{font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.day[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.day[aria-pressed="true"] small{color:inherit}
+.day:disabled{opacity:.35;cursor:default}
+.dlabel{margin:10px 0 8px;font-weight:600}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:360px){.slots{grid-template-columns:repeat(3,1fr)}}
+.slot{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-sm);padding:11px 0;font:inherit;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer}
+.slot:hover{border-color:var(--accent);color:var(--accent)}
+.muted{color:var(--muted)}
+.err{color:var(--err);font-weight:600}
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:4px 16px;margin-top:14px}
+.summary div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.summary div:last-child{border-bottom:0}
+.summary small{color:var(--muted)}.summary b{text-align:right;font-variant-numeric:tabular-nums}
+form{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+label{font-size:13px;color:var(--muted);margin-top:6px}
+input{font:inherit;padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+.cta{margin-top:14px;border:0;border-radius:var(--r);padding:15px;font:inherit;font-weight:700;font-size:16px;background:var(--accent);color:var(--accent-ink);cursor:pointer;width:100%}
+.cta[disabled]{opacity:.6}
+.cta.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.done{text-align:center;padding-top:26px}
+.done .ring{width:64px;height:64px;border-radius:50%;background:var(--soft);display:grid;place-items:center;margin:0 auto 12px;color:var(--accent);font-size:30px}
+.done h3{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.01em;margin:0}
+.done p{color:var(--muted);margin:6px auto 0;max-width:34ch}
+.bk{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.bk-top{display:flex;justify-content:space-between;gap:10px}
+.bk-time{font-family:var(--display);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.bk small{color:var(--muted)}
+.bk-act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.link{border:0;background:none;font:inherit;font-weight:600;color:var(--err);padding:0;cursor:pointer}
+.link.plain{color:var(--muted)}
+.tabs button{font-size:14px}
+.pill{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap;align-self:flex-start;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.pill.ok{background:transparent;color:var(--ok);border-color:var(--ok)}
+.pill.wait{background:var(--soft);color:var(--accent);border-color:transparent}
+.client{font-weight:700;font-size:16px;margin-top:10px}
+.crow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:14px}
+.crow .lbl{color:var(--muted);width:72px;flex:0 0 auto}
+.crow a{color:var(--accent);font-weight:600;text-decoration:none;font-variant-numeric:tabular-nums}
+.mini{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.btn2{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:var(--r-sm);padding:8px 12px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.msgbox{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+textarea{font:inherit;padding:10px 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;resize:vertical}
+.okmsg{color:var(--ok);font-weight:600;font-size:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:4px 16px}
+.sw{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;color:var(--ink);font-size:15px;margin:0}
+.sw:last-child{border-bottom:0}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw i{flex:0 0 auto;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;transition:background .15s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.sw input:checked+i{background:var(--accent)}
+.sw input:checked+i::after{transform:translateX(18px)}
+.sw input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0 12px}
+.seg button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:var(--r-sm);padding:8px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.seg button:disabled{opacity:.4;cursor:default}
+.price-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.price-row:last-child{border-bottom:0}
+.price-row label{margin:0;color:var(--ink);font-size:15px;min-width:0}
+.price-in{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.price-in input{width:84px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;padding:8px 10px}
+.price-in span{color:var(--muted);font-size:13px;width:32px}
+.hint{font-size:13px;color:var(--muted);margin:-4px 0 10px}
+.contact{display:flex;flex-direction:column;align-items:center;gap:10px}
+.call{display:flex;align-items:center;gap:10px;width:100%;background:var(--accent);color:var(--accent-ink);text-decoration:none;border-radius:var(--r);padding:14px 16px;font-weight:700;font-size:15px}
+.call{border:0;font:inherit;font-weight:700;cursor:pointer}
+.call span{flex:1;text-align:left}
+.callmenu{width:100%;display:flex;flex-direction:column;gap:8px}
+.callopt{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;color:var(--ink);text-decoration:none;text-align:left}
+.callopt svg{color:var(--accent);flex:0 0 auto}
+.callopt b{display:block;font-size:15px}
+.callopt small{display:block;color:var(--muted);font-size:12px}
+.call b{font-variant-numeric:tabular-nums;font-weight:600;opacity:.9}
+.contact .tel{display:inline-block;margin-top:4px;font-size:16px;font-weight:700;color:var(--ink);text-decoration:none;font-variant-numeric:tabular-nums}
+.contact{margin-top:28px;font-size:13px;color:var(--muted);text-align:center}
+.svc,.day,.slot,.summary,.bk,.panel,.callopt{border-color:var(--card-b);box-shadow:var(--shadow)}
+.svc:hover,.slot:hover{border-color:var(--accent)}
+.day[aria-pressed="true"]{border-color:var(--accent)}
+.svc{padding:16px}
+.svc-main b{font-size:16px;font-weight:600}
+.chev{color:var(--muted);flex:0 0 auto;margin-left:-4px}
+.svc-meta b{font-size:16px}
+.slot-group{margin-top:14px}
+.slot-group>small{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+/* Шапка-карточка */
+.hero{display:flex;flex-direction:column;gap:14px}
+.role{font-size:14px;color:var(--muted);margin-top:2px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.q{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:var(--r-sm);border:1px solid var(--card-b);background:var(--surface);box-shadow:var(--shadow);color:var(--ink);font:inherit;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
+.q svg{color:var(--accent)}
+.q[aria-expanded="true"]{outline:2px solid var(--accent)}
+:root:not([data-skin]) .hero{background:linear-gradient(150deg,var(--hero-1),var(--hero-2));color:#FFFFFF;border-radius:var(--r);padding:18px;box-shadow:0 12px 32px rgba(14,71,67,.25)}
+:root:not([data-skin]) .hero .role{color:rgba(255,255,255,.78)}
+:root:not([data-skin]) .hero a.addr{color:#FFFFFF;font-weight:500;opacity:.92}
+:root:not([data-skin]) .hero .mark{box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+:root:not([data-skin]) .hero .q{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.18);box-shadow:none;color:#FFFFFF;backdrop-filter:blur(6px)}
+:root:not([data-skin]) .hero .q svg{color:#FFFFFF}
+:root:not([data-skin]) .hero .q[aria-expanded="true"]{outline-color:#FFFFFF}
+:root:not([data-skin]) .hero .callopt{background:#FFFFFF;color:#131A19}
+:root:not([data-skin]) .hero .callopt small{color:#62706D}
+:root:not([data-skin]) .hero .callopt svg{color:#1E6B64}
+:root:not([data-skin]) .tabs{border-color:transparent;box-shadow:var(--shadow)}
+:root:not([data-skin]) .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.mark{width:64px;height:64px;margin:3px}
+/* Управление: разделы и календарь */
+.subnav{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;padding-bottom:2px;scrollbar-width:none}
+.subnav button{flex:0 0 auto;border:1px solid var(--card-b);background:var(--surface);box-shadow:var(--shadow);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.subnav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-head b{font-size:16px}
+.cal-head .mini{padding:6px 12px;font-size:14px}
+.cal-head .mini:disabled{opacity:.35}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.cal-w{margin-bottom:5px}
+.cal-w small{text-align:center;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.cal-d{position:relative;aspect-ratio:1;border:1px solid var(--card-b);border-radius:var(--r-sm);background:var(--surface);box-shadow:var(--shadow);color:var(--ink);font:inherit;cursor:pointer;display:grid;place-items:center;padding:0}
+.cal-d b{font-weight:600;font-variant-numeric:tabular-nums}
+.cal-d.off{background:transparent;box-shadow:none;border-color:var(--line);color:var(--muted)}
+.cal-d.off b{text-decoration:line-through}
+.cal-d.custom::after{content:"";position:absolute;bottom:5px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--accent)}
+.cal-d.today b{color:var(--accent);font-weight:800}
+.cal-d.later{opacity:.55}
+.cal-d i{position:absolute;top:3px;right:3px;font-style:normal;font-size:10px;font-weight:700;line-height:16px;min-width:16px;padding:0 4px;border-radius:99px;background:var(--accent);color:var(--accent-ink)}
+.cal-d[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:1px}
+.cal-d:disabled{opacity:.28;cursor:default;box-shadow:none}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.lg{font-style:normal;display:inline-grid;place-items:center;min-width:16px;height:16px;border-radius:99px;font-size:10px;font-weight:700}
+.lg.n{background:var(--accent);color:var(--accent-ink);padding:0 4px}
+.lg.c{width:7px;min-width:7px;height:7px;background:var(--accent)}
+.lg.o{border:1px solid var(--line);border-radius:4px;text-decoration:line-through;padding:0 2px}
+.dayed{margin-top:14px;padding:14px 16px}
+.dayed-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.dayed .seg{padding-bottom:6px}
+.tchips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.tchip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:var(--r-sm);padding:9px 0;font:inherit;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer}
+.tchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.sched-tabs{margin-top:4px}
+.day-links{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:12px}
+.day-links .link{font-size:14px}
+.wdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:10px}
+.wdays button{border:1px solid var(--card-b);background:var(--surface);box-shadow:var(--shadow);color:var(--ink);border-radius:var(--r-sm);padding:8px 0;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.wdays button small{font-size:11px;color:var(--muted)}
+.wdays button.off{background:transparent;box-shadow:none;border-color:var(--line);color:var(--muted)}
+.wdays button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.wdays button[aria-pressed="true"] small{color:inherit}
+.wk{padding:4px 16px}
+.wk .sw{border-bottom:0}
+.wk.off{opacity:.75}
+.wk select{background:var(--bg)}
+/* Отзывы, фото, статистика */
+.hero-rate{white-space:nowrap;font-weight:600}
+.gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin:0 -2px}
+.gal{flex:0 0 auto;width:132px;aspect-ratio:4/5;border:0;padding:0;border-radius:var(--r-sm);overflow:hidden;background:var(--soft);cursor:pointer;max-width:100%}
+.gal img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-empty{padding:16px;border-radius:var(--r);border:1px dashed var(--line);color:var(--muted);font-size:13px;text-align:center}
+.lightbox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lightbox img{max-width:100%;max-height:80vh;border-radius:12px}
+.lightbox p{color:#FFFFFF;margin:0}
+.lightbox button{position:absolute;top:max(14px,env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px));width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#FFFFFF;font-size:18px;cursor:pointer}
+.stars{color:#E2A93B;letter-spacing:1px;font-size:14px;white-space:nowrap}
+.stars-off{color:var(--line)}
+.rating-big{display:flex;align-items:center;gap:10px;margin:-2px 0 10px}
+.rating-big b{font-family:var(--display);font-size:30px;line-height:1}
+.reviews{display:flex;flex-direction:column;gap:8px}
+.rev{background:var(--surface);border:1px solid var(--card-b);box-shadow:var(--shadow);border-radius:var(--r);padding:14px 16px}
+.rev.off{opacity:.55}
+.rev-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.rev p{margin:6px 0 4px;font-size:14px}
+.rev-foot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wl{margin-top:14px;display:block}
+.wl-big{width:100%;padding:12px}
+button.link.wl{margin-left:auto;margin-right:auto;font-size:14px}
+.resched-note{margin-top:16px;background:var(--soft);color:var(--ink)}
+.summary b.was{color:var(--muted);text-decoration:line-through}
+.pill.warn{background:transparent;color:var(--err);border-color:var(--err);font-size:11px;padding:2px 8px;vertical-align:middle}
+.ghost-err{border-color:var(--err);color:var(--err)}
+.mark-row .bk-act{margin-top:8px}
+.sw span{display:flex;flex-direction:column}
+.sw-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{background:var(--surface);border:1px solid var(--card-b);box-shadow:var(--shadow);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums;line-height:1.15;overflow-wrap:anywhere}
+.tile span{font-size:13px;color:var(--ink)}
+.tile small{font-size:12px;color:var(--muted)}
+.bars{padding:10px 16px}
+.bar{position:relative;display:flex;justify-content:space-between;gap:10px;padding:10px 0 14px;font-size:14px}
+.bar b{font-variant-numeric:tabular-nums}
+.bar i{position:absolute;left:0;bottom:6px;height:5px;border-radius:99px;background:var(--accent)}
+.ph-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ph,.ph-add{position:relative;aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-add{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px dashed var(--accent);color:var(--accent);cursor:pointer;background:var(--surface)}
+.ph-add span{font-size:28px;line-height:1}
+.ph-add small{font-size:12px;font-weight:600}
+.ph-del{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#FFFFFF;cursor:pointer}
+/* Скромная строчка внизу: раскрывается только по нажатию */
+.credit{margin-top:36px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center}
+.credit details{width:100%}
+.credit summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;padding:6px 8px;border-radius:8px}
+.credit summary::-webkit-details-marker{display:none}
+.credit summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.credit details[open] summary::after{transform:rotate(-135deg) translateY(-1px)}
+.credit summary:focus-visible{outline:2px solid var(--accent)}
+.credit-body{text-align:left;margin-top:8px;padding:16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--card-b);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.credit-lead{margin:0;color:var(--muted);font-size:13px}
+.credit-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+@media (max-width:380px){.credit-list{grid-template-columns:1fr}}
+.credit-list li{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;min-width:0}
+.credit-list svg{flex:0 0 auto;color:var(--accent);width:16px;height:16px;margin-top:1px}
+.credit-btn{display:block;text-align:center;padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.credit-by{color:var(--muted);font-size:11px;opacity:.8}
+@media (prefers-reduced-motion:no-preference){#view>*{animation:rise .18s ease}@keyframes rise{from{transform:translateY(5px)}}}
+</style>
+
+<div class="app">
+  <div class="skins" id="skins" role="group" aria-label="Вариант дизайна" hidden>
+    <span>Дизайн:</span>
+    <button data-skin="">Классика</button><button data-skin="pole">Барбершоп</button><button data-skin="vintage">Винтаж</button><button data-skin="paper">Минимал</button>
+  </div>
+  <section class="hero">
+    <header class="top">
+      <img class="mark" id="avatar" alt="Илья" width="56" height="56" src="data:image/jpeg;base64,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">
+      <div>
+        <h1 id="hTitle">Илья Барбер</h1>
+        <div class="role" id="hRole"></div>
+        <a class="addr" id="hAddr" target="_blank" rel="noopener" hidden></a>
+      </div>
+    </header>
+    <div class="quick">
+      <a class="q" id="qRoute" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg><span>Маршрут</span></a>
+      <button class="q" id="qCall" aria-expanded="false" aria-controls="callMenu"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span>Позвонить</span></button>
+      <a class="q" id="qTg" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.4 4.2 2.9 11.3c-1.3.5-1.3 1.2-.2 1.6l4.7 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.6c.3-1.3-.5-1.8-1.4-1.4zM8.6 14.1l9.8-6.2c.5-.3.9-.1.5.2l-8.4 7.6-.3 3.6z"/></svg><span>Telegram</span></a>
+    </div>
+    <div class="callmenu" id="callMenu" hidden>
+      <a class="callopt" id="callTel"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span><b>По телефону</b><small id="callNum"></small></span></a>
+      <a class="callopt" id="callTg" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.4 4.2 2.9 11.3c-1.3.5-1.3 1.2-.2 1.6l4.7 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.6c.3-1.3-.5-1.8-1.4-1.4zM8.6 14.1l9.8-6.2c.5-.3.9-.1.5.2l-8.4 7.6-.3 3.6z"/></svg><span><b>В Telegram</b><small>Откроется чат с Ильёй, кнопка звонка вверху</small></span></a>
+      <button class="callopt" id="copyPhone" style="font:inherit;cursor:pointer;width:100%"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" fill="none" stroke="currentColor" stroke-width="2"/></svg><span><b id="copyLbl">Скопировать номер</b><small>Для Viber или WhatsApp</small></span></button>
+    </div>
+  </section>
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tBook" aria-selected="true">Запись</button>
+    <button role="tab" id="tMine" aria-selected="false">Мои записи</button>
+    <button role="tab" id="tAdmin" aria-selected="false" hidden>Управление</button>
+  </div>
+  <div class="demo" id="demoNote" hidden>Демо: услуги, график и занятые окна — примеры. Записи сохраняются только в этом браузере.</div>
+  <main id="view"></main>
+  <footer class="credit" id="credit">
+    <details>
+      <summary>Хотите такое же приложение?</summary>
+      <div class="credit-body">
+        <p class="credit-lead">Онлайн-запись в Telegram для барберов, мастеров маникюра, бровей, массажа и салонов.</p>
+        <ul class="credit-list"><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Онлайн-запись 24/7 прямо в Telegram</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Напоминания клиентам перед визитом</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Подтверждение визита в одно касание</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Маршрут на карте до двери</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Расписание и цены меняются с телефона</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Переписка с клиентами через бота</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Отзывы клиентов и фото работ</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ваше фото, цвета и название</span></li></ul>
+        <a class="credit-btn" id="creditBtn" target="_blank" rel="noopener" hidden>Написать разработчику</a>
+      </div>
+    </details>
+    <small class="credit-by" id="creditBy" hidden></small>
+  </footer>
+</div>
+
+<script>
+function boot(){
+const API_URL = 'https://script.google.com/macros/s/AKfycby00AbbH2vO03XV8IZ2HMj7RsXchN60twK0iZ-63ctPetVcxFNof8JadNtTdQWGnfYsrw/exec'; // ссылка на веб-приложение Apps Script; пусто = демо-режим
+const DEMO = !API_URL;
+const tg = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) ? Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); document.documentElement.dataset.theme = tg.colorScheme === 'dark' ? 'dark' : 'light'; }
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mem = { get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}} };
+const DOW = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const DOWF = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const MON = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const dt = iso => new Date(iso + 'T12:00:00');
+const human = iso => { const d = dt(iso); return d.getDate() + ' ' + MON[d.getMonth()] + ', ' + DOWF[d.getDay()]; };
+const isoOf = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const mm = t => { const [a,b] = t.split(':'); return +a*60 + +b; };
+const hm = m => String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
+const dur = m => m < 60 ? m + ' мин' : Math.floor(m/60) + ' ч' + (m%60 ? ' ' + m%60 + ' мин' : '');
+
+/* ---------- демо-данные (в рабочей версии всё берётся из Google Таблицы) ---------- */
+const MOCK = { title:'Илья Барбер', master:'Илья', subtitle:'Мужские стрижки · Гомель', address:'Гомель, ул. Разина, 10, 5-й подъезд, кв. 74', phone:'+375 33 325-97-05', telegram:'https://t.me/ilyalapulya',
+  mapUrl:'https://yandex.by/maps/?rtext=~52.38831%2C31.03211&rtt=auto' };
+const SVC_DEFAULT = [
+  { name:'Мужская стрижка', dur:60, price:30, show:true },
+  { name:'Стрижка + борода', dur:90, price:45, show:true },
+  { name:'Детская стрижка', dur:45, price:25, show:true } ];
+let DEMO_SVCS = mem.get('demo-svcs', SVC_DEFAULT);
+const fmtPrice = n => String(n).replace('.', ',') + ' BYN';
+const DEMO_REVIEWS = [
+  { id:'r1', name:'Артём', rating:5, text:'Лучший фейд в Гомеле. Всё чётко по времени, приятно поболтать.', date:'2026-10-18', service:'Мужская стрижка' },
+  { id:'r2', name:'Максим', rating:5, text:'Записался за минуту прямо в телеграме, напомнили заранее. Борода огонь.', date:'2026-10-12', service:'Стрижка + борода' },
+  { id:'r3', name:'Денис', rating:4, text:'Сына подстригли быстро и аккуратно, ребёнок доволен.', date:'2026-10-05', service:'Детская стрижка' } ];
+let DEMO_RHIDE = mem.get('demo-rhide', []);
+let DEMO_PHOTOS = mem.get('demo-photos', []);
+const demoPublicReviews = () => DEMO_REVIEWS.filter(r => !DEMO_RHIDE.includes(r.id));
+const visibleSvcs = () => DEMO_SVCS.filter(x => x.show).map(x => ({ name:x.name, dur:x.dur, price:fmtPrice(x.price), desc:'' }));
+const WEEK_CODES = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const WD = ['10:00','11:00','12:00','13:00','15:00','16:00','17:00','18:00','19:00'];
+const WEEK_DEFAULT = [WD, WD, WD, WD, WD, ['11:00','12:00','13:00','14:00','15:00','16:00','17:00'], []].map((sl, i) => ({ day: WEEK_CODES[i], slots: sl }));
+let DEMO_WEEK = mem.get('demo-week2', WEEK_DEFAULT);
+let DEMO_EX = mem.get('demo-ex2', {});
+const demoDaySlots = date => DEMO_EX[date] || DEMO_WEEK[(dt(date).getDay() + 6) % 7].slots;
+function mockDays(){ const out=[], t=new Date(); for(let i=0;i<14;i++){ const d=new Date(t); d.setDate(t.getDate()+i); const iso=isoOf(d); out.push({date:iso, open:demoDaySlots(iso).length > 0}); } return out; }
+function mockSlots(date, svcName){
+  const svc = visibleSvcs().find(s => s.name === svcName);
+  if (!svc) return [];
+  const busy = mem.get('demo-book', []).filter(b => b.date === date && b.status === 'активна').map(b => [mm(b.time), mm(b.end)]);
+  if (!DEMO_EX[date]) { const d = dt(date); [11, 16].forEach((h, i) => { if ((d.getDate() + i) % 2) busy.push([h*60, h*60 + 60]); }); } // для демо часть окон «занята»
+  const now = new Date(), minStart = date === isoOf(now) ? now.getHours()*60 + now.getMinutes() + 60 : -1;
+  return demoDaySlots(date).map(mm).filter(m => m >= minStart && !busy.some(([a,b]) => m < b && m + svc.dur > a)).map(hm);
+}
+async function mock(action, p){
+  await new Promise(r => setTimeout(r, 220));
+  if (action === 'config') return { ...MOCK, services: visibleSvcs(), days: mockDays(), photos: DEMO_PHOTOS, reviews: demoPublicReviews(), rating: { avg: 4.9, count: 37 } };
+  if (action === 'slots') return { slots: mockSlots(p.date, p.service) };
+  if (action === 'book') {
+    if (!mockSlots(p.date, p.service).includes(p.time)) throw Object.assign(new Error('Это время только что заняли. Выберите другое.'), {taken:true});
+    const svc = visibleSvcs().find(s => s.name === p.service);
+    const b = { id: Math.random().toString(36).slice(2,10), date:p.date, time:p.time, end:hm(mm(p.time)+svc.dur), service:svc.name, price:svc.price, status:'активна', name:p.name, phone:p.phone, username:'', confirm:'' };
+    const all = mem.get('demo-book', []); all.push(b); mem.set('demo-book', all); return { ok:true, booking:b };
+  }
+  if (action === 'my') { const t = isoOf(new Date()); return { bookings: mem.get('demo-book', []).filter(b => b.status === 'активна' && b.date >= t).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)) }; }
+  if (action === 'cancel' || action === 'admin_cancel') {
+    const all = mem.get('demo-book', []); const b = all.find(x => x.id === p.id);
+    if (b) { b.status = 'отменена'; mem.set('demo-book', all); }
+    else mem.set('demo-hidden', [...mem.get('demo-hidden', []), p.id]);
+    return { ok:true };
+  }
+  if (action === 'waitlist') return { ok:true };
+  if (action === 'reschedule') {
+    const all = mem.get('demo-book', []); const b = all.find(x => x.id === p.id);
+    if (!b) throw new Error('Запись не найдена');
+    const svc = visibleSvcs().find(s => s.name === b.service);
+    b.status = 'перенос'; mem.set('demo-book', all);
+    const free = mockSlots(p.date, b.service).includes(p.time);
+    b.status = 'активна';
+    if (!free && !(b.date === p.date && b.time === p.time)) { mem.set('demo-book', all); throw Object.assign(new Error('Это время только что заняли. Выберите другое.'), {taken:true}); }
+    Object.assign(b, { date:p.date, time:p.time, end:hm(mm(p.time) + (svc ? svc.dur : 60)) }); mem.set('demo-book', all); return { ok:true };
+  }
+  if (action === 'admin_visit') { const v = mem.get('demo-visits', {}); v[p.id] = p.visit; mem.set('demo-visits', v); return { ok:true }; }
+  if (action === 'admin_stats') {
+    const base = { '2026-10': [86, 2690, 9, 14, 6, 2], '2026-09': [79, 2455, 0, 11, 8, 4] }[p.month] || [0, 0, 0, 0, 0, 0];
+    const [done, revenue, upcoming, newClients, cancelled, noShows] = base;
+    return { month:p.month, currency:'BYN', done, revenue, expected: upcoming * 32, upcoming, newClients, clients: Math.round(done * 0.8), cancelled, noShows, rating:4.9, ratingCount:37,
+      services: done ? [{ name:'Мужская стрижка', n: Math.round(done * .62) }, { name:'Стрижка + борода', n: Math.round(done * .27) }, { name:'Детская стрижка', n: done - Math.round(done * .62) - Math.round(done * .27) }] : [] };
+  }
+  if (action === 'admin_reviews') return { reviews: DEMO_REVIEWS.map(r => ({ ...r, hidden: DEMO_RHIDE.includes(r.id) })), photos: DEMO_PHOTOS };
+  if (action === 'admin_review_hide') { DEMO_RHIDE = p.hidden ? [...DEMO_RHIDE, p.id] : DEMO_RHIDE.filter(x => x !== p.id); mem.set('demo-rhide', DEMO_RHIDE); return { ok:true }; }
+  if (action === 'admin_photo_add') {
+    const ph = { id: 'p' + Date.now(), url: p.data, caption: p.caption || '' };
+    DEMO_PHOTOS = [ph, ...DEMO_PHOTOS].slice(0, 12); mem.set('demo-photos', DEMO_PHOTOS); return { ok:true, photo: ph };
+  }
+  if (action === 'admin_photo_del') { DEMO_PHOTOS = DEMO_PHOTOS.filter(x => x.id !== p.id); mem.set('demo-photos', DEMO_PHOTOS); return { ok:true }; }
+  if (action === 'admin_list') {
+    const t = new Date(), tm = new Date(); tm.setDate(t.getDate() + 1);
+    const hidden = mem.get('demo-hidden', []);
+    const samples = [
+      { id:'s1', date:isoOf(t), time:'12:00', end:'13:00', service:'Мужская стрижка', price:'30 BYN', name:'Артём (пример)', phone:'+375 29 555-12-34', username:'artem_k', confirm:'придёт' },
+      { id:'s2', date:isoOf(t), time:'17:00', end:'18:30', service:'Стрижка + борода', price:'45 BYN', name:'Максим (пример)', phone:'+375 33 777-45-10', username:'', confirm:'запрошено' },
+      { id:'s3', date:isoOf(tm), time:'11:00', end:'12:00', service:'Мужская стрижка', price:'30 BYN', name:'Дмитрий (пример)', phone:'+375 44 120-88-61', username:'dima_92', confirm:'' }
+    ].filter(b => !hidden.includes(b.id));
+    const own = mem.get('demo-book', []).filter(b => b.status === 'активна' && b.date >= isoOf(t));
+    const y = new Date(); y.setDate(t.getDate() - 1);
+    const visits = mem.get('demo-visits', {});
+    const past = [
+      { id:'p1', date:isoOf(y), time:'15:00', end:'16:00', service:'Мужская стрижка', price:'30 BYN', name:'Игорь (пример)', phone:'+375 29 300-11-22', username:'igor_g', confirm:'придёт', noShows:0 },
+      { id:'p2', date:isoOf(y), time:'18:00', end:'19:30', service:'Стрижка + борода', price:'45 BYN', name:'Павел (пример)', phone:'+375 33 410-55-66', username:'', confirm:'запрошено', noShows:1 }
+    ].filter(b => !visits[b.id]);
+    samples.forEach(x => x.noShows = x.id === 's2' ? 1 : 0);
+    return { bookings: [...samples, ...own].sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)), toMark: past };
+  }
+  if (action === 'admin_settings') return { ...mem.get('demo-set', { reminders:[24,2], confirm:3 }), ...mem.get('demo-back', { comeback:4, askReviews:true }), comebackOptions:[0,3,4,5,6,8], reminderOptions:[0.5,1,1.5,2,3,24,48], confirmOptions:[2,3,5,24],
+    currency:'BYN', services: DEMO_SVCS.map(x => ({ ...x })) };
+  if (action === 'admin_save' && p.services) {
+    const seen = {};
+    for (const x of p.services) {
+      if (!x.name) throw new Error('У одной из услуг нет названия');
+      if (seen[x.name.toLowerCase()]) throw new Error('Услуга «' + x.name + '» указана дважды');
+      seen[x.name.toLowerCase()] = 1;
+    }
+    DEMO_SVCS = p.services.map(x => ({ ...x })); mem.set('demo-svcs', DEMO_SVCS); return { ok:true };
+  }
+  if (action === 'admin_save') { mem.set('demo-set', { reminders:p.reminders, confirm:p.confirm }); if (p.comeback !== undefined) mem.set('demo-back', { comeback:p.comeback, askReviews:p.askReviews }); return { ok:true }; }
+  if (action === 'admin_schedule') {
+    const counts = {}; const t = new Date(), tm = new Date(); tm.setDate(t.getDate() + 1);
+    const hidden = mem.get('demo-hidden', []);
+    [['s1', isoOf(t)], ['s2', isoOf(t)], ['s3', isoOf(tm)]].forEach(([id, d]) => { if (!hidden.includes(id)) counts[d] = (counts[d] || 0) + 1; });
+    mem.get('demo-book', []).filter(b => b.status === 'активна').forEach(b => counts[b.date] = (counts[b.date] || 0) + 1);
+    return { week: JSON.parse(JSON.stringify(DEMO_WEEK)), exceptions: JSON.parse(JSON.stringify(DEMO_EX)), counts, today: isoOf(t), daysAhead: 14 };
+  }
+  if (action === 'admin_week_save') { DEMO_WEEK = p.week.map(x => ({ day:x.day, slots:[...x.slots].sort() })); mem.set('demo-week2', DEMO_WEEK); return { ok:true }; }
+  if (action === 'admin_day_save') {
+    if (p.mode === 'default') delete DEMO_EX[p.date]; else DEMO_EX[p.date] = [...p.slots].sort();
+    mem.set('demo-ex2', DEMO_EX); return { ok:true };
+  }
+  if (action === 'admin_message') { if (!String(p.text||'').trim()) throw new Error('Напишите текст сообщения'); return { ok:true }; }
+}
+
+async function api(action, data = {}){
+  if (DEMO) return mock(action, data);
+  const r = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action, initData: tg ? tg.initData : '', ...data }) });
+  const j = await r.json();
+  if (j.error) throw Object.assign(new Error(j.error), { taken: !!j.taken });
+  return j;
+}
+
+/* ---------- состояние и экраны ---------- */
+const S = { tab:'book', step:'service', resched:null, waitOk:null, cfg:null, service:null, date:null, time:null, slots:null, mine:null, msg:'', last:null, confirm:null,
+  adm:{ sec:'bookings', list:null, set:null, draft:null, open:null, cancel:null, sent:null, saved:false, err:'', svcs:null, svcSaved:false, sch:null, month:null, day:null, dd:null, daySaved:null, week:null, weekSaved:false, view:'cal', wd:0, toMark:[], back:{ comeback:4, askReviews:true }, stats:null, statMonth:null, rv:null, uploading:false } };
+const hLabel = h => h === 24 ? 'За день' : h === 48 ? 'За 2 дня' : h < 1 ? 'За ' + Math.round(h*60) + ' минут' : 'За ' + String(h).replace('.', ',') + (h === 1 ? ' час' : h < 5 && Number.isInteger(h) ? ' часа' : ' часа');
+const confirmView = c => c === 'придёт' ? ['ok','Придёт'] : c === 'запрошено' ? ['wait','Ждём ответа'] : c === 'отменил' ? ['','Отменил'] : ['','Записан'];
+function openTg(url){ if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank'); }
+let slotReq = 0;
+
+function render(){
+  $('#tBook').setAttribute('aria-selected', S.tab === 'book');
+  $('#tMine').setAttribute('aria-selected', S.tab === 'mine');
+  $('#tAdmin').setAttribute('aria-selected', S.tab === 'admin');
+  const v = $('#view');
+  if (!S.cfg) { v.innerHTML = S.msg ? `<p class="err">${esc(S.msg)}</p>` : '<p class="muted">Загружаем расписание…</p>'; return; }
+  if (S.tab === 'mine') return renderMine(v);
+  if (S.tab === 'admin') return renderAdmin(v);
+  ({ service: renderService, slot: renderSlot, form: renderForm, done: renderDone, resched: renderResched })[S.step](v);
+  if (tg) tg.BackButton[S.step === 'service' ? 'hide' : 'show']();
+}
+
+const stars = n => `<span class="stars" aria-label="${n} из 5">${'★'.repeat(n)}<span class="stars-off">${'★'.repeat(5 - n)}</span></span>`;
+function socialHtml(){
+  const c = S.cfg, ph = c.photos || [], rv = c.reviews || [];
+  let h = '';
+  if (ph.length) h += `<h2>Работы</h2><div class="gallery">${ph.map((p, i) => `<button class="gal" data-ph="${i}" aria-label="Открыть фото"><img src="${esc(p.url)}" alt="${esc(p.caption || 'Работа мастера')}" loading="lazy"></button>`).join('')}</div>`;
+  else if (DEMO) h += `<h2>Работы</h2><div class="gal-empty">Здесь будут фото работ. Добавьте их в «Управление» → «Отзывы и фото».</div>`;
+  if (rv.length) h += `<h2>Отзывы${DEMO ? ' <small class="muted" style="font-weight:500;font-size:13px">· примеры</small>' : ''}</h2>
+    ${c.rating ? `<div class="rating-big"><b>${String(c.rating.avg).replace('.', ',')}</b>${stars(Math.round(c.rating.avg))}<span class="muted">${c.rating.count} ${plural(c.rating.count,'оценка','оценки','оценок')}</span></div>` : ''}
+    <div class="reviews">${rv.map(r => `<div class="rev"><div class="rev-top"><b>${esc(r.name)}</b>${stars(r.rating)}</div><p>${esc(r.text)}</p><small class="muted">${human(r.date).split(',')[0]}</small></div>`).join('')}</div>`;
+  return h;
+}
+function openPhoto(i){
+  const ph = S.cfg.photos[i]; if (!ph) return;
+  const o = document.createElement('div'); o.className = 'lightbox'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Фото работы');
+  o.innerHTML = `<img src="${esc(ph.url)}" alt="${esc(ph.caption || 'Работа мастера')}">${ph.caption ? `<p>${esc(ph.caption)}</p>` : ''}<button aria-label="Закрыть">✕</button>`;
+  o.onclick = () => o.remove(); document.body.appendChild(o);
+}
+
+function renderService(v){
+  v.innerHTML = `${S.resched ? reschedBanner() : ''}<h2>Выберите услугу</h2><div class="list">${S.cfg.services.map((s,i) => `
+    <button class="svc" data-i="${i}">
+      <span class="svc-main"><b>${esc(s.name)}</b>${s.desc ? `<small>${esc(s.desc)}</small>` : ''}</span>
+      <span class="svc-meta"><b>${esc(s.price)}</b><small>${dur(s.dur)}</small></span>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>`).join('')}</div>${socialHtml()}`;
+  v.querySelectorAll('[data-ph]').forEach(b => b.onclick = () => openPhoto(+b.dataset.ph));
+  v.querySelectorAll('.svc').forEach(b => b.onclick = () => {
+    S.service = S.cfg.services[+b.dataset.i]; S.step = 'slot'; S.time = null; S.msg = '';
+    if (!S.date || !S.cfg.days.some(d => d.date === S.date && d.open)) S.date = (S.cfg.days.find(d => d.open) || {}).date;
+    loadSlots();
+  });
+}
+
+function loadSlots(){
+  S.slots = null; render();
+  if (!S.date) { S.slots = []; render(); return; }
+  const id = ++slotReq;
+  api('slots', { date: S.date, service: S.service.name })
+    .then(r => { if (id === slotReq) { S.slots = r.slots; render(); } })
+    .catch(e => { if (id === slotReq) { S.slots = []; S.msg = e.message; render(); } });
+}
+
+function renderSlot(v){
+  const slots = S.slots === null ? '<p class="muted">Ищем свободные окна…</p>'
+    : S.slots.length ? [['Утро', 0, 720], ['День', 720, 1020], ['Вечер', 1020, 1440]].map(([n, a, b]) => {
+        const g = S.slots.filter(t => mm(t) >= a && mm(t) < b);
+        return g.length ? `<div class="slot-group"><small>${n}</small><div class="slots">${g.map(t => `<button class="slot" data-t="${t}">${t}</button>`).join('')}</div></div>` : '';
+      }).join('')
+    : '<p class="muted">На этот день свободных окон нет. Выберите другой день или попросите сообщить, если время освободится.</p>';
+  const wl = S.slots === null || !S.date || S.resched ? '' : S.waitOk === S.date
+    ? '<p class="okmsg wl">Готово! Напишем в Telegram, если на этот день освободится время.</p>'
+    : `<button class="${S.slots.length ? 'link plain wl' : 'btn2 wl wl-big'}" id="waitBtn">🔔 ${S.slots.length ? 'Нет удобного времени? Сообщить, если освободится' : 'Сообщить, если освободится'}</button>`;
+  v.innerHTML = `${S.resched ? reschedBanner() : ''}<button class="back" id="back">← ${S.resched ? 'Отменить перенос' : esc(S.service.name) + ' · ' + dur(S.service.dur) + ' · ' + esc(S.service.price)}</button>
+    <h2>Дата и время</h2>
+    <div class="days">${S.cfg.days.map(d => { const x = dt(d.date); return `<button class="day" data-d="${d.date}" ${d.open ? '' : 'disabled'} aria-pressed="${d.date === S.date}" aria-label="${human(d.date)}"><small>${DOW[x.getDay()]}</small><b>${x.getDate()}</b></button>`; }).join('')}</div>
+    ${S.date ? `<div class="dlabel">${human(S.date)}</div>` : ''}
+    ${S.msg ? `<p class="err">${esc(S.msg)}</p>` : ''}
+    ${slots}${wl}`;
+  $('#back').onclick = S.resched ? () => { S.resched = null; S.step = 'service'; switchTab('mine'); } : goBack;
+  const wb = $('#waitBtn');
+  if (wb) wb.onclick = async () => {
+    wb.disabled = true;
+    try {
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && !tg.initDataUnsafe.user.allows_write_to_pm && tg.requestWriteAccess) await new Promise(r => tg.requestWriteAccess(() => r()));
+      await api('waitlist', { date: S.date, service: S.service.name }); S.waitOk = S.date;
+    } catch (e) { S.msg = e.message; }
+    render();
+  };
+  v.querySelectorAll('.day').forEach(b => b.onclick = () => { S.date = b.dataset.d; S.msg = ''; loadSlots(); });
+  v.querySelectorAll('.slot').forEach(b => b.onclick = () => { S.time = b.dataset.t; S.step = S.resched ? 'resched' : 'form'; S.msg = ''; render(); });
+  const sel = v.querySelector('.day[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ block:'nearest', inline:'center' });
+}
+
+function renderForm(v){
+  const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+  const saved = mem.get('client', {});
+  const endT = hm(mm(S.time) + S.service.dur);
+  v.innerHTML = `<button class="back" id="back">← Другое время</button>
+    <div class="summary">
+      <div><small>Услуга</small><b>${esc(S.service.name)}</b></div>
+      <div><small>Когда</small><b>${human(S.date)}<br>${S.time}–${endT}</b></div>
+      <div><small>Стоимость</small><b>${esc(S.service.price)}</b></div>
+    </div>
+    <form id="f" novalidate>
+      <label for="fName">Имя</label>
+      <input id="fName" autocomplete="given-name" value="${esc(saved.name || (u && u.first_name) || '')}">
+      <label for="fPhone">Телефон</label>
+      <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" value="${esc(saved.phone || '+375 ')}">
+      <small class="muted" style="font-size:12px">Например: +375 29 123-45-67</small>
+      <p class="err" id="fErr" ${S.msg ? '' : 'hidden'}>${esc(S.msg)}</p>
+      <button class="cta" id="fBtn" type="submit">Записаться на ${S.time}</button>
+    </form>`;
+  $('#back').onclick = goBack;
+  $('#f').onsubmit = async e => {
+    e.preventDefault();
+    const name = $('#fName').value.trim(), phone = $('#fPhone').value.trim(), err = $('#fErr');
+    const fail = m => { err.textContent = m; err.hidden = false; };
+    if (!name) return fail('Напишите, как к вам обращаться.');
+    if (phone.replace(/\D/g, '').length < 10) return fail('Впишите номер телефона полностью, например +375 29 123-45-67.');
+    const btn = $('#fBtn'); btn.disabled = true; btn.textContent = 'Записываем…';
+    try {
+      if (tg && u && !u.allows_write_to_pm && tg.requestWriteAccess) await new Promise(r => tg.requestWriteAccess(() => r()));
+      const r = await api('book', { service: S.service.name, date: S.date, time: S.time, name, phone });
+      mem.set('client', { name, phone });
+      S.last = r.booking; S.step = 'done'; S.msg = ''; S.mine = null;
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      render();
+    } catch (ex) {
+      if (ex.taken) { S.step = 'slot'; S.msg = ex.message; loadSlots(); return; }
+      btn.disabled = false; btn.textContent = 'Записаться на ' + S.time; fail(ex.message);
+    }
+  };
+}
+
+function reschedBanner(){ return `<div class="demo resched-note">Перенос записи «${esc(S.resched.service)}» с ${human(S.resched.date).split(',')[0]}, ${S.resched.time}. Выберите новое время.</div>`; }
+
+function renderResched(v){
+  const o = S.resched, endT = hm(mm(S.time) + S.service.dur);
+  v.innerHTML = `<button class="back" id="back">← Другое время</button>
+    <h2>Перенести запись?</h2>
+    <div class="summary">
+      <div><small>Услуга</small><b>${esc(o.service)}</b></div>
+      <div><small>Было</small><b class="was">${human(o.date)}<br>${o.time}–${o.end}</b></div>
+      <div><small>Станет</small><b>${human(S.date)}<br>${S.time}–${endT}</b></div>
+    </div>
+    ${S.msg ? `<p class="err">${esc(S.msg)}</p>` : ''}
+    <button class="cta" id="rsBtn">Перенести на ${S.time}</button>`;
+  $('#back').onclick = () => { S.step = 'slot'; S.msg = ''; loadSlots(); };
+  $('#rsBtn').onclick = async e => {
+    e.target.disabled = true; e.target.textContent = 'Переносим…';
+    try {
+      await api('reschedule', { id: o.id, date: S.date, time: S.time });
+      S.last = { ...o, date: S.date, time: S.time, end: endT, moved: true }; S.resched = null; S.step = 'done'; S.mine = null; S.msg = '';
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    } catch (ex) { if (ex.taken) { S.step = 'slot'; S.msg = ex.message; loadSlots(); return; } S.msg = ex.message; }
+    render();
+  };
+}
+
+function renderDone(v){
+  const b = S.last;
+  v.innerHTML = `<div class="done">
+      <div class="ring" aria-hidden="true">✓</div>
+      <h3>${b.moved ? 'Запись перенесена' : 'Вы записаны'}</h3>
+      <p>${DEMO ? 'В рабочей версии бот пришлёт подтверждение и точку на карте с маршрутом, а перед визитом напомнит.' : 'Подтверждение и точку на карте отправили в Telegram. Перед визитом пришлём напоминание.'}</p>
+    </div>
+    <div class="summary">
+      <div><small>Услуга</small><b>${esc(b.service)}</b></div>
+      <div><small>Когда</small><b>${human(b.date)}<br>${b.time}–${b.end}</b></div>
+      ${S.cfg.address ? `<div><small>Адрес</small><b>${esc(S.cfg.address)}${S.cfg.mapUrl ? `<a class="maplink" href="${esc(S.cfg.mapUrl)}" target="_blank" rel="noopener" data-ext>Маршрут на карте →</a>` : ''}</b></div>` : ''}
+    </div>
+    <button class="cta" id="again">Записаться ещё</button>
+    <button class="cta ghost" id="toMine">Мои записи</button>`;
+  v.querySelectorAll('[data-ext]').forEach(a => a.onclick = e => { if (tg) { e.preventDefault(); tg.openLink(a.href); } });
+  $('#again').onclick = () => { S.step = 'service'; render(); };
+  $('#toMine').onclick = () => switchTab('mine');
+}
+
+function renderMine(v){
+  if (S.mine === null) {
+    v.innerHTML = '<p class="muted" style="margin-top:22px">Загружаем ваши записи…</p>';
+    api('my').then(r => { S.mine = r.bookings; render(); }).catch(e => { S.mine = []; S.msg = e.message; render(); });
+    return;
+  }
+  const list = S.mine.length ? `<div class="list">${S.mine.map(b => `
+    <div class="bk">
+      <div class="bk-top"><div><div class="bk-time">${b.time}–${b.end}</div><small>${human(b.date)}</small></div><b>${esc(b.price)}</b></div>
+      <div>${esc(b.service)}</div>
+      <div class="bk-act">${S.confirm === b.id
+        ? `<span>Отменить запись?</span><button class="link" data-yes="${b.id}">Да, отменить</button><button class="link plain" data-no>Нет</button>`
+        : `<button class="btn2" data-move="${b.id}">Перенести</button><button class="link" data-cancel="${b.id}">Отменить запись</button>`}</div>
+    </div>`).join('')}</div>`
+    : '<p class="muted">Активных записей нет.</p>';
+  v.innerHTML = `<h2>Мои записи</h2>${S.msg ? `<p class="err">${esc(S.msg)}</p>` : ''}${list}
+    ${S.mine.length ? '' : '<button class="cta" id="goBook">Записаться</button>'}`;
+  v.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => { S.confirm = b.dataset.cancel; render(); });
+  v.querySelectorAll('[data-move]').forEach(b => b.onclick = () => {
+    const bk = S.mine.find(x => x.id === b.dataset.move);
+    const svc = S.cfg.services.find(x => x.name === bk.service);
+    if (!svc) { S.msg = 'Эта услуга больше недоступна. Отмените запись и выберите другую.'; render(); return; }
+    S.resched = bk; S.service = svc; S.date = bk.date; S.tab = 'book'; S.step = 'slot'; S.msg = ''; loadSlots();
+  });
+  v.querySelectorAll('[data-no]').forEach(b => b.onclick = () => { S.confirm = null; render(); });
+  v.querySelectorAll('[data-yes]').forEach(b => b.onclick = async () => {
+    b.disabled = true; b.textContent = 'Отменяем…';
+    try { await api('cancel', { id: b.dataset.yes }); S.confirm = null; S.mine = null; S.msg = ''; }
+    catch (e) { S.msg = e.message; }
+    render();
+  });
+  const gb = $('#goBook'); if (gb) gb.onclick = () => switchTab('book');
+}
+
+const HOURS = Array.from({ length: 14 }, (_, i) => hm(480 + i * 60)); // 08:00 … 21:00
+const MONTHS_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const plural = (n, a, b, c) => n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? b : c;
+
+function renderAdmin(v){
+  const A = S.adm;
+  const SECS = [['bookings','Записи'],['schedule','Расписание'],['services','Услуги'],['notify','Уведомления'],['reviews','Отзывы и фото'],['stats','Статистика']];
+  const nav = `${DEMO ? '<div class="demo">Эту вкладку в рабочей версии видит только Илья: приложение узнаёт его по Telegram-аккаунту.</div>' : ''}
+    <div class="subnav" role="group" aria-label="Разделы управления">${SECS.map(([k, n]) => `<button data-sec="${k}" aria-pressed="${A.sec === k}">${n}</button>`).join('')}</div>
+    ${A.err ? `<p class="err">${esc(A.err)}</p>` : ''}`;
+  const loading = t => { v.innerHTML = nav + `<p class="muted" style="margin-top:18px">${t}</p>`; bindNav(); };
+  function bindNav(){ v.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => { A.sec = b.dataset.sec; A.err = ''; render(); }); }
+
+  if (A.sec === 'schedule') {
+    if (!A.sch) { loading('Загружаем расписание…'); api('admin_schedule').then(r => { A.sch = r; render(); }).catch(e => { A.err = e.message; A.sec = 'bookings'; render(); }); return; }
+    return renderSchedule(v, nav, bindNav);
+  }
+  if (A.sec === 'stats') {
+    if (!A.statMonth) A.statMonth = isoOf(new Date()).slice(0, 7);
+    if (!A.stats || A.stats.month !== A.statMonth) { loading('Считаем…'); api('admin_stats', { month: A.statMonth }).then(r => { A.stats = r; render(); }).catch(e => { A.err = e.message; A.sec = 'bookings'; render(); }); return; }
+    return renderStats(v, nav, bindNav);
+  }
+  if (A.sec === 'reviews') {
+    if (!A.rv) { loading('Загружаем отзывы и фото…'); api('admin_reviews').then(r => { A.rv = r; render(); }).catch(e => { A.err = e.message; A.sec = 'bookings'; render(); }); return; }
+    return renderReviews(v, nav, bindNav);
+  }
+  if (A.list === null || A.set === null) {
+    loading('Загружаем записи и настройки…');
+    Promise.all([api('admin_list'), api('admin_settings')])
+      .then(([l, s]) => { A.list = l.bookings; A.toMark = l.toMark || []; A.set = s; A.back = { comeback: s.comeback || 0, askReviews: s.askReviews !== false }; A.draft = { reminders:[...s.reminders], confirm:s.confirm }; A.svcs = (s.services || []).map(x => ({ ...x })); A.err = ''; render(); })
+      .catch(e => { A.list = []; A.set = { reminders:[], confirm:0, reminderOptions:[], confirmOptions:[], services:[] }; A.draft = { reminders:[], confirm:0 }; A.svcs = []; A.err = e.message; render(); });
+    return;
+  }
+
+  let body = '';
+  if (A.sec === 'bookings') {
+    const byDate = {};
+    A.list.forEach(b => (byDate[b.date] = byDate[b.date] || []).push(b));
+    body = (A.toMark && A.toMark.length ? `<h2>Отметьте, кто пришёл</h2>
+      <p class="hint">Так статистика будет точной, а клиенты, которые не пришли, получат пометку.</p>
+      <div class="list">${A.toMark.map(b => `<div class="bk mark-row">
+        <div class="bk-top"><div><b>${esc(b.name)}</b><small style="display:block">${human(b.date).split(',')[0]}, ${b.time} · ${esc(b.service)}</small></div></div>
+        <div class="bk-act"><button class="btn2" data-visit="${b.id}" data-v="пришёл">✓ Пришёл</button><button class="btn2 ghost-err" data-visit="${b.id}" data-v="не пришёл">Не пришёл</button></div>
+      </div>`).join('')}</div>` : '') + `<h2>Ближайшие записи</h2>` + (A.list.length ? Object.keys(byDate).map(d => `<div class="dlabel">${human(d)} · ${byDate[d].length} ${plural(byDate[d].length,'запись','записи','записей')}</div>
+      <div class="list">${byDate[d].map(b => { const [cls, lbl] = confirmView(b.confirm); return `
+        <div class="bk">
+          <div class="bk-top"><div><div class="bk-time">${b.time}–${b.end}</div><small>${esc(b.service)} · ${esc(b.price)}</small></div><span class="pill ${cls}">${lbl}</span></div>
+          <div class="client">${esc(b.name)}${b.noShows ? ` <span class="pill warn">не пришёл ${b.noShows} ${plural(b.noShows,'раз','раза','раз')}</span>` : ''}</div>
+          <div class="crow"><span class="lbl">Телефон</span><a href="tel:${esc(String(b.phone).replace(/[^\d+]/g,''))}">${esc(b.phone)}</a><button class="mini" data-copy="${esc(b.phone)}">Копировать</button></div>
+          <div class="crow"><span class="lbl">Telegram</span>${b.username
+            ? `<a href="https://t.me/${esc(b.username)}" target="_blank" rel="noopener" data-tg="${esc(b.username)}">@${esc(b.username)}</a>`
+            : '<span class="muted">нет ника, пишите через бота</span>'}</div>
+          <div class="bk-act">
+            ${A.cancel === b.id
+              ? `<span>Отменить и предупредить клиента?</span><button class="link" data-acyes="${b.id}">Да</button><button class="link plain" data-acno>Нет</button>`
+              : `<button class="btn2" data-msg="${b.id}">Написать через бота</button><button class="link" data-ac="${b.id}">Отменить</button>`}
+          </div>
+          ${A.open === b.id ? `<div class="msgbox"><label for="msg-${b.id}">Сообщение придёт клиенту от бота, он сможет ответить</label>
+            <textarea id="msg-${b.id}" rows="3" placeholder="Например: Привет! Сегодня в силе?"></textarea>
+            <button class="cta" style="margin-top:0" data-send="${b.id}">Отправить</button></div>` : ''}
+          ${A.sent === b.id ? '<div class="okmsg" style="margin-top:8px">Сообщение отправлено</div>' : ''}
+        </div>`; }).join('')}</div>`).join('') : '<p class="muted">Активных записей пока нет.</p>');
+  }
+  if (A.sec === 'services') {
+    body = `<h2>Услуги и цены</h2>
+    <div class="list">${A.svcs.map((x, i) => `
+      <div class="panel ed${x.show ? '' : ' off'}" id="ed-${i}">
+        <label for="sn-${i}">Название</label>
+        <input id="sn-${i}" data-i="${i}" data-f="name" maxlength="60" value="${esc(x.name)}" placeholder="Например: Камуфляж седины">
+        <div class="ed-row">
+          <div><label for="sd-${i}">Длительность</label>
+            <select id="sd-${i}" data-i="${i}" data-f="dur">${[...new Set([15,30,45,60,75,90,105,120,150,180,x.dur])].sort((a,b)=>a-b).map(m => `<option value="${m}" ${m === x.dur ? 'selected' : ''}>${dur(m)}</option>`).join('')}</select></div>
+          <div><label for="sp-${i}">Цена, ${esc(A.set.currency || '')}</label>
+            <input id="sp-${i}" data-i="${i}" data-f="price" inputmode="decimal" value="${esc(String(x.price).replace('.', ','))}"></div>
+        </div>
+        <label class="sw" for="ss-${i}"><span>Показывать клиентам</span><input type="checkbox" role="switch" id="ss-${i}" data-i="${i}" data-f="show" ${x.show ? 'checked' : ''}><i></i></label>
+        <button class="link" data-del="${i}">Удалить услугу</button>
+      </div>`).join('')}</div>
+    <button class="btn2 add" id="addSvc">+ Добавить услугу</button>
+    <button class="cta" id="saveSvcs">Сохранить услуги</button>
+    ${A.svcSaved ? '<p class="okmsg" style="text-align:center">Услуги сохранены, клиенты уже видят изменения</p>' : ''}`;
+  }
+  if (A.sec === 'notify') {
+    const d = A.draft;
+    body = `<h2>Напоминания клиентам</h2>
+    <p class="hint">Бот сам напишет клиенту перед визитом. Можно включить несколько.</p>
+    <div class="panel">${(A.set.reminderOptions || []).map(h => `
+      <label class="sw" for="rem-${String(h).replace('.','_')}"><span>${hLabel(h)}</span>
+        <input type="checkbox" role="switch" id="rem-${String(h).replace('.','_')}" data-h="${h}" ${d.reminders.includes(h) ? 'checked' : ''}><i></i></label>`).join('')}
+    </div>
+    <h2>Подтверждение визита</h2>
+    <p class="hint">Бот спросит «Придёте?» с кнопками «Приду» и «Не смогу». Если клиент не сможет, запись отменится, а вам придёт уведомление. Отвечать не обязательно: без ответа запись остаётся, а у неё будет статус «Ждём ответа». Если время совпадает с напоминанием, клиент получит одно сообщение с кнопками.</p>
+    <div class="panel">
+      <label class="sw" for="cfOn"><span>Спрашивать подтверждение</span><input type="checkbox" role="switch" id="cfOn" ${d.confirm ? 'checked' : ''}><i></i></label>
+      <div class="seg" role="group" aria-label="Когда спрашивать">${(A.set.confirmOptions || []).map(h => `<button data-ch="${h}" aria-pressed="${d.confirm === h}" ${d.confirm ? '' : 'disabled'}>${hLabel(h).toLowerCase()}</button>`).join('')}</div>
+    </div>
+    <h2>Позвать снова</h2>
+    <p class="hint">Через выбранное время после визита бот сам напишет клиенту: «Пора освежить стрижку?» с кнопкой записи. Не пишет, если клиент уже записан.</p>
+    <div class="panel">
+      <div class="seg" role="group" aria-label="Через сколько недель" style="padding-top:12px">${(A.set.comebackOptions || [0,3,4,5,6,8]).map(w => `<button data-cb="${w}" aria-pressed="${A.back.comeback === w}">${w ? 'через ' + w + ' нед.' : 'не звать'}</button>`).join('')}</div>
+    </div>
+    <h2>Оценка после визита</h2>
+    <div class="panel"><label class="sw" for="rvOn"><span>Через 2 часа после визита просить оценить<small class="sw-sub">Оценки 4–5 с отзывом появятся в приложении, о низких придёт сигнал вам</small></span><input type="checkbox" role="switch" id="rvOn" ${A.back.askReviews ? 'checked' : ''}><i></i></label></div>
+    <button class="cta" id="saveSet">Сохранить настройки</button>
+    ${A.saved ? '<p class="okmsg" style="text-align:center">Настройки сохранены</p>' : ''}`;
+  }
+  v.innerHTML = nav + body;
+  bindNav();
+
+  v.querySelectorAll('[data-copy]').forEach(b => b.onclick = async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Скопировано'; } catch (e) { b.textContent = b.dataset.copy; }
+  });
+  v.querySelectorAll('[data-tg]').forEach(a => a.onclick = e => { if (tg) { e.preventDefault(); openTg('https://t.me/' + a.dataset.tg); } });
+  v.querySelectorAll('[data-msg]').forEach(b => b.onclick = () => { A.open = A.open === b.dataset.msg ? null : b.dataset.msg; A.sent = null; A.cancel = null; render(); const t = $('#msg-' + A.open); if (t) t.focus(); });
+  v.querySelectorAll('[data-send]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.send, text = $('#msg-' + id).value;
+    b.disabled = true; b.textContent = 'Отправляем…';
+    try { await api('admin_message', { id, text }); A.open = null; A.sent = id; A.err = ''; } catch (e) { A.err = e.message; }
+    render();
+  });
+  v.querySelectorAll('[data-visit]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { await api('admin_visit', { id: b.dataset.visit, visit: b.dataset.v }); A.toMark = A.toMark.filter(x => x.id !== b.dataset.visit); A.err = ''; A.stats = null; } catch (e) { A.err = e.message; }
+    render();
+  });
+  v.querySelectorAll('[data-ac]').forEach(b => b.onclick = () => { A.cancel = b.dataset.ac; A.open = null; render(); });
+  v.querySelectorAll('[data-acno]').forEach(b => b.onclick = () => { A.cancel = null; render(); });
+  v.querySelectorAll('[data-acyes]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { await api('admin_cancel', { id: b.dataset.acyes }); A.cancel = null; A.list = null; A.set = null; A.sch = null; A.err = ''; } catch (e) { A.err = e.message; }
+    render();
+  });
+
+  if (A.sec === 'services') {
+    v.querySelectorAll('[data-f]').forEach(el => {
+      const i = +el.dataset.i, f = el.dataset.f;
+      const upd = () => {
+        A.svcSaved = false;
+        if (f === 'show') { A.svcs[i].show = el.checked; $('#ed-' + i).classList.toggle('off', !el.checked); }
+        else if (f === 'dur') A.svcs[i].dur = +el.value;
+        else A.svcs[i][f] = el.value;
+      };
+      el.oninput = upd; el.onchange = upd;
+    });
+    v.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { A.svcs.splice(+b.dataset.del, 1); A.svcSaved = false; render(); });
+    $('#addSvc').onclick = () => { A.svcs.push({ name:'', dur:30, price:'', show:true }); A.svcSaved = false; render(); const n = $('#sn-' + (A.svcs.length - 1)); if (n) { n.scrollIntoView({ block:'center' }); n.focus(); } };
+    $('#saveSvcs').onclick = async e => {
+      const list = [];
+      for (const x of A.svcs) {
+        const name = String(x.name).trim(), raw = String(x.price).replace(',', '.').trim(), price = Number(raw);
+        if (!name) { A.err = 'Напишите название для каждой услуги.'; render(); return; }
+        if (raw === '' || !(price >= 0)) { A.err = 'Проверьте цену: ' + name; render(); return; }
+        list.push({ name, dur: +x.dur, price, show: x.show !== false });
+      }
+      if (!list.length) { A.err = 'Нужна хотя бы одна услуга.'; render(); return; }
+      e.target.disabled = true; e.target.textContent = 'Сохраняем…';
+      try { await api('admin_save', { services: list }); A.svcs = list.map(x => ({ ...x })); A.svcSaved = true; A.err = ''; S.cfg = await api('config'); S.service = null; S.step = 'service'; }
+      catch (ex) { A.err = ex.message; }
+      render();
+    };
+  }
+  if (A.sec === 'notify') {
+    const d = A.draft;
+    v.querySelectorAll('[data-h]').forEach(i => i.onchange = () => { const h = +i.dataset.h; d.reminders = i.checked ? [...d.reminders, h] : d.reminders.filter(x => x !== h); A.saved = false; });
+    $('#cfOn').onchange = e => { d.confirm = e.target.checked ? (A.set.confirmOptions.includes(3) ? 3 : A.set.confirmOptions[0]) : 0; A.saved = false; render(); };
+    v.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { d.confirm = +b.dataset.ch; A.saved = false; render(); });
+    v.querySelectorAll('[data-cb]').forEach(b => b.onclick = () => { A.back.comeback = +b.dataset.cb; A.saved = false; render(); });
+    $('#rvOn').onchange = e => { A.back.askReviews = e.target.checked; A.saved = false; };
+    $('#saveSet').onclick = async e => {
+      e.target.disabled = true; e.target.textContent = 'Сохраняем…';
+      try { await api('admin_save', { reminders: d.reminders, confirm: d.confirm, comeback: A.back.comeback, askReviews: A.back.askReviews }); A.set.reminders = [...d.reminders]; A.set.confirm = d.confirm; A.saved = true; A.err = ''; }
+      catch (ex) { A.err = ex.message; }
+      render();
+    };
+  }
+}
+
+function renderStats(v, nav, bindNav){
+  const A = S.adm, st = A.stats;
+  const [y, mo] = A.statMonth.split('-').map(Number);
+  const money = n => String(Math.round(n * 100) / 100).replace('.', ',') + ' ' + st.currency;
+  const maxS = Math.max(1, ...st.services.map(x => x.n));
+  const tile = (val, lbl, sub) => `<div class="tile"><b>${val}</b><span>${lbl}</span>${sub ? `<small>${sub}</small>` : ''}</div>`;
+  v.innerHTML = nav + `<div class="cal-head" style="margin-top:18px"><button class="mini" id="sPrev" aria-label="Предыдущий месяц">←</button><b>${MONTHS_NOM[mo - 1]} ${y}</b><button class="mini" id="sNext" ${A.statMonth >= isoOf(new Date()).slice(0, 7) ? 'disabled' : ''} aria-label="Следующий месяц">→</button></div>
+    ${DEMO ? '<div class="demo">Цифры в демо — примеры.</div>' : ''}
+    <div class="tiles">
+      ${tile(money(st.revenue), 'выручка', st.expected ? 'ещё ' + money(st.expected) + ' впереди' : '')}
+      ${tile(st.done, plural(st.done, 'визит', 'визита', 'визитов'), st.upcoming ? st.upcoming + ' впереди' : '')}
+      ${tile(st.newClients, 'новых ' + plural(st.newClients, 'клиент', 'клиента', 'клиентов'), st.clients ? 'из ' + st.clients + ' всего' : '')}
+      ${tile(st.rating ? String(st.rating).replace('.', ',') + ' ★' : '—', 'средняя оценка', st.ratingCount ? st.ratingCount + ' ' + plural(st.ratingCount, 'оценка', 'оценки', 'оценок') : '')}
+      ${tile(st.cancelled, plural(st.cancelled, 'отмена', 'отмены', 'отмен'), '')}
+      ${tile(st.noShows, plural(st.noShows, 'неявка', 'неявки', 'неявок'), st.done + st.noShows ? Math.round(st.noShows / (st.done + st.noShows) * 100) + '% от визитов' : '')}
+    </div>
+    <h2>Популярные услуги</h2>
+    ${st.services.length ? `<div class="panel bars">${st.services.map(x => `<div class="bar"><span>${esc(x.name)}</span><b>${x.n}</b><i style="width:${Math.round(x.n / maxS * 100)}%"></i></div>`).join('')}</div>` : '<p class="muted">В этом месяце визитов пока нет.</p>'}`;
+  bindNav();
+  const shift = k => { const d = new Date(y, mo - 1 + k, 1); A.statMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); render(); };
+  $('#sPrev').onclick = () => shift(-1);
+  $('#sNext').onclick = () => shift(1);
+}
+
+function resizeImage(file, max){
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => rej(new Error('Не удалось открыть фото. Попробуйте другое.'));
+    img.src = url;
+  });
+}
+
+function renderReviews(v, nav, bindNav){
+  const A = S.adm, R = A.rv;
+  v.innerHTML = nav + `<h2>Фото работ</h2>
+    <p class="hint">Клиенты видят их на главном экране под услугами.</p>
+    <div class="ph-grid">
+      <label class="ph-add" for="phFile"><span>+</span><small>${A.uploading ? 'Загружаем…' : 'Добавить фото'}</small></label>
+      <input type="file" id="phFile" accept="image/*" ${A.uploading ? 'disabled' : ''} style="position:absolute;opacity:0;width:1px;height:1px">
+      ${R.photos.map(p => `<div class="ph"><img src="${esc(p.url)}" alt="${esc(p.caption || 'Фото работы')}"><button class="ph-del" data-pdel="${esc(p.id)}" aria-label="Удалить фото">✕</button></div>`).join('')}
+    </div>
+    <h2>Отзывы</h2>
+    <p class="hint">Отзывы с оценкой 4–5 и текстом видны в приложении. Любой можно скрыть.</p>
+    ${R.reviews.length ? `<div class="reviews">${R.reviews.map(r => `<div class="rev${r.hidden ? ' off' : ''}">
+      <div class="rev-top"><b>${esc(r.name)}</b>${stars(r.rating)}</div>
+      ${r.text ? `<p>${esc(r.text)}</p>` : '<p class="muted">Без текста</p>'}
+      <div class="rev-foot"><small class="muted">${human(r.date).split(',')[0]} · ${esc(r.service || '')}</small>
+      ${r.rating >= 4 && r.text ? `<button class="link plain" data-rhide="${esc(r.id)}" data-h="${r.hidden ? '' : '1'}">${r.hidden ? 'Показать' : 'Скрыть'}</button>` : '<small class="muted">не показывается</small>'}</div>
+    </div>`).join('')}</div>` : '<p class="muted">Отзывов пока нет. Они появятся после первых визитов.</p>'}`;
+  bindNav();
+  $('#phFile').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    A.uploading = true; render();
+    try {
+      const data = await resizeImage(f, DEMO ? 600 : 1080);
+      const r = await api('admin_photo_add', { data });
+      R.photos = [r.photo, ...R.photos]; A.err = ''; S.cfg = await api('config');
+    } catch (ex) { A.err = ex.message; }
+    A.uploading = false; render();
+  };
+  v.querySelectorAll('[data-pdel]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { await api('admin_photo_del', { id: b.dataset.pdel }); R.photos = R.photos.filter(x => x.id !== b.dataset.pdel); S.cfg = await api('config'); } catch (e) { A.err = e.message; }
+    render();
+  });
+  v.querySelectorAll('[data-rhide]').forEach(b => b.onclick = async () => {
+    const hidden = !!b.dataset.h;
+    try { await api('admin_review_hide', { id: b.dataset.rhide, hidden }); R.reviews.find(x => x.id === b.dataset.rhide).hidden = hidden; S.cfg = await api('config'); } catch (e) { A.err = e.message; }
+    render();
+  });
+}
+
+function hourGrid(sel, attr){
+  return `<div class="tchips">${HOURS.map(t => `<button class="tchip" ${attr}="${t}" aria-pressed="${sel.includes(t)}">${t}</button>`).join('')}</div>`;
+}
+
+function renderSchedule(v, nav, bindNav){
+  const A = S.adm, C = A.sch;
+  if (!A.month) A.month = C.today.slice(0, 7);
+  if (!A.view) A.view = 'cal';
+  const [y, mo] = A.month.split('-').map(Number);
+  const first = new Date(y, mo - 1, 1), daysIn = new Date(y, mo, 0).getDate(), offset = (first.getDay() + 6) % 7;
+  const weekSlots = iso => C.week[(dt(iso).getDay() + 6) % 7].slots;
+  const effective = iso => C.exceptions[iso] || weekSlots(iso);
+  const tabs = `<div class="seg sched-tabs" role="group" aria-label="Что настраиваем">
+      <button data-view="cal" aria-pressed="${A.view === 'cal'}">Календарь</button>
+      <button data-view="week" aria-pressed="${A.view === 'week'}">Обычная неделя</button></div>`;
+  let body = '';
+
+  if (A.view === 'cal') {
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push('<span></span>');
+    for (let d = 1; d <= daysIn; d++) {
+      const iso = `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const past = iso < C.today, n = C.counts[iso] || 0, off = !effective(iso).length;
+      const cls = [off ? 'off' : '', C.exceptions[iso] ? 'custom' : '', iso === C.today ? 'today' : ''].join(' ');
+      cells.push(`<button class="cal-d ${cls}" data-date="${iso}" aria-pressed="${iso === A.day}" ${past ? 'disabled' : ''} aria-label="${human(iso)}"><b>${d}</b>${n ? `<i>${n}</i>` : ''}</button>`);
+    }
+    let editor = '<p class="hint" style="margin-top:12px">Нажмите на день, чтобы открыть или закрыть часы именно на него.</p>';
+    if (A.day) {
+      if (!A.dd || A.dd.date !== A.day) A.dd = { date: A.day, slots: [...effective(A.day)] };
+      const n = C.counts[A.day] || 0, changed = !!C.exceptions[A.day];
+      editor = `<div class="panel dayed">
+        <div class="dayed-top"><b>${human(A.day)}</b>${n ? `<span class="pill wait">${n} ${plural(n,'запись','записи','записей')}</span>` : ''}</div>
+        <p class="hint">Отмеченные часы открыты для записи. Нажмите, чтобы открыть или закрыть.</p>
+        ${hourGrid(A.dd.slots, 'data-t')}
+        <button class="cta" id="saveDay">Сохранить</button>
+        <div class="day-links"><button class="link plain" id="dayOff">Сделать выходным</button>${changed ? '<button class="link plain" id="dayReset">Вернуть обычную неделю</button>' : ''}</div>
+        ${n && !A.dd.slots.length ? '<p class="hint">На этот день уже есть записи. Они останутся, отменить их можно в разделе «Записи».</p>' : ''}
+        ${A.daySaved === A.day ? '<p class="okmsg" style="text-align:center">Сохранено</p>' : ''}
+      </div>`;
+    }
+    body = `<div class="cal-head"><button class="mini" id="mPrev" ${A.month > C.today.slice(0, 7) ? '' : 'disabled'} aria-label="Предыдущий месяц">←</button><b>${MONTHS_NOM[mo - 1]} ${y}</b><button class="mini" id="mNext" aria-label="Следующий месяц">→</button></div>
+      <div class="cal cal-w">${WEEK_CODES.map(w => `<small>${w}</small>`).join('')}</div>
+      <div class="cal">${cells.join('')}</div>
+      <div class="legend"><span><i class="lg n">2</i>записи</span><span><i class="lg c"></i>изменён вручную</span><span><i class="lg o">12</i>выходной</span></div>
+      ${editor}`;
+  } else {
+    if (!A.week) A.week = C.week.map(x => ({ day: x.day, slots: [...x.slots] }));
+    if (A.wd == null) A.wd = 0;
+    const W = A.week, cur = W[A.wd];
+    body = `<p class="hint">Так вы работаете каждую неделю. Отдельный день всегда можно поменять в календаре.</p>
+      <div class="wdays">${W.map((d, i) => `<button data-wd="${i}" aria-pressed="${i === A.wd}" class="${d.slots.length ? '' : 'off'}"><b>${d.day}</b><small>${d.slots.length ? d.slots.length + ' ч' : 'вых'}</small></button>`).join('')}</div>
+      <div class="panel dayed">
+        <div class="dayed-top"><b>${DOWF[(A.wd + 1) % 7][0].toUpperCase() + DOWF[(A.wd + 1) % 7].slice(1)}</b><span class="muted" style="font-size:13px">${cur.slots.length ? cur.slots.length + ' ' + plural(cur.slots.length,'окно','окна','окон') : 'выходной'}</span></div>
+        ${hourGrid(cur.slots, 'data-wt')}
+        <div class="day-links"><button class="link plain" id="wdOff">Сделать выходным</button><button class="link plain" id="wdCopy">Как в понедельник</button></div>
+      </div>
+      <button class="cta" id="saveWeek">Сохранить неделю</button>
+      ${A.weekSaved ? '<p class="okmsg" style="text-align:center">Неделя сохранена</p>' : ''}`;
+  }
+
+  v.innerHTML = nav + tabs + body;
+  bindNav();
+  v.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { A.view = b.dataset.view; render(); });
+
+  if (A.view === 'cal') {
+    const shift = k => { const d = new Date(y, mo - 1 + k, 1); A.month = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); render(); };
+    $('#mPrev').onclick = () => shift(-1);
+    $('#mNext').onclick = () => shift(1);
+    v.querySelectorAll('.cal-d').forEach(b => b.onclick = () => { A.day = b.dataset.date; A.daySaved = null; A.err = ''; render(); const ed = v.querySelector('.dayed'); if (ed) ed.scrollIntoView({ block:'nearest', behavior:'smooth' }); });
+    v.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { const t = b.dataset.t, sl = A.dd.slots; A.dd.slots = sl.includes(t) ? sl.filter(x => x !== t) : [...sl, t]; b.setAttribute('aria-pressed', A.dd.slots.includes(t)); A.daySaved = null; });
+    const saveDay = async (mode, slots) => {
+      try { await api('admin_day_save', { date: A.day, mode, slots }); A.daySaved = A.day; A.err = ''; A.sch = await api('admin_schedule'); A.dd = null; S.cfg = await api('config'); }
+      catch (e) { A.err = e.message; }
+      render();
+    };
+    if ($('#saveDay')) {
+      $('#saveDay').onclick = e => { e.target.disabled = true; e.target.textContent = 'Сохраняем…'; saveDay('set', A.dd.slots); };
+      $('#dayOff').onclick = () => { A.dd.slots = []; saveDay('set', []); };
+      if ($('#dayReset')) $('#dayReset').onclick = () => saveDay('default', []);
+    }
+  } else {
+    const cur = A.week[A.wd];
+    v.querySelectorAll('[data-wd]').forEach(b => b.onclick = () => { A.wd = +b.dataset.wd; render(); });
+    v.querySelectorAll('[data-wt]').forEach(b => b.onclick = () => { const t = b.dataset.wt; cur.slots = cur.slots.includes(t) ? cur.slots.filter(x => x !== t) : [...cur.slots, t]; A.weekSaved = false; render(); });
+    $('#wdOff').onclick = () => { cur.slots = []; A.weekSaved = false; render(); };
+    $('#wdCopy').onclick = () => { cur.slots = [...A.week[0].slots]; A.weekSaved = false; render(); };
+    $('#saveWeek').onclick = async e => {
+      e.target.disabled = true; e.target.textContent = 'Сохраняем…';
+      try { await api('admin_week_save', { week: A.week }); A.weekSaved = true; A.err = ''; A.sch = await api('admin_schedule'); A.week = null; S.cfg = await api('config'); }
+      catch (ex) { A.err = ex.message; }
+      render();
+    };
+  }
+}
+
+function goBack(){ S.msg = ''; S.step = S.step === 'form' ? 'slot' : 'service'; if (S.step === 'slot') loadSlots(); else render(); }
+function switchTab(t){
+  S.tab = t; S.msg = ''; S.confirm = null;
+  if (t === 'mine') S.mine = null;
+  if (t === 'admin') Object.assign(S.adm, { list:null, set:null, open:null, cancel:null, sent:null, saved:false, err:'', svcs:null, svcSaved:false, sch:null, dd:null, daySaved:null, week:null, weekSaved:false, stats:null, rv:null });
+  if (t === 'book' && S.step === 'done') S.step = 'service';
+  if (t !== 'book' && S.resched) { S.resched = null; S.step = 'service'; }
+  render();
+}
+$('#tBook').onclick = () => switchTab('book');
+$('#tMine').onclick = () => switchTab('mine');
+$('#tAdmin').onclick = () => switchTab('admin');
+if (tg) tg.BackButton.onClick(() => { if (S.tab === 'book' && S.step !== 'service') goBack(); });
+
+/* Вариант дизайна. В рабочей версии фиксируется в SKIN, переключатель виден только в демо */
+const SKIN = '';
+/* Ссылка «Хочу такое же» — на разработчика приложения */
+const CREDIT_URL = 'https://t.me/Vladisslav_K';
+const CREDIT_NAME = '@Vladisslav_K';
+function applySkin(k){
+  if (k) document.documentElement.dataset.skin = k; else delete document.documentElement.dataset.skin;
+  document.querySelectorAll('#skins [data-skin]').forEach(b => b.setAttribute('aria-pressed', b.dataset.skin === k));
+  if (tg && tg.setHeaderColor) { const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(); try { tg.setHeaderColor(bg); tg.setBackgroundColor(bg); } catch (e) {} }
+}
+if (DEMO) {
+  $('#skins').hidden = false;
+  document.querySelectorAll('#skins [data-skin]').forEach(b => b.onclick = () => { mem.set('demo-skin', b.dataset.skin); applySkin(b.dataset.skin); });
+  applySkin(mem.get('demo-skin', SKIN));
+} else applySkin(SKIN);
+
+$('#demoNote').hidden = !DEMO;
+api('config').then(c => {
+  S.cfg = c;
+  $('#tAdmin').hidden = !(c.isAdmin || DEMO);
+  $('#hTitle').textContent = c.title;
+  const ha = $('#hAddr');
+  if (c.address) {
+    ha.hidden = false;
+    ha.innerHTML = '<svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><path d="M6 13s5-4.5 5-8A5 5 0 0 0 1 5c0 3.5 5 8 5 8z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="5" r="1.7" fill="currentColor"/></svg><span>' + esc(c.address) + '</span>';
+    if (c.mapUrl) { ha.href = c.mapUrl; ha.onclick = e => { if (tg) { e.preventDefault(); tg.openLink(c.mapUrl); } }; } else ha.removeAttribute('href');
+  }
+  document.title = c.title;
+  $('#hRole').innerHTML = esc(c.subtitle || '') + (c.rating ? ` <span class="hero-rate">★ ${String(c.rating.avg).replace('.', ',')} · ${c.rating.count} ${plural(c.rating.count,'оценка','оценки','оценок')}</span>` : '');
+  if (c.mapUrl) { $('#qRoute').href = c.mapUrl; $('#qRoute').onclick = e => { if (tg) { e.preventDefault(); tg.openLink(c.mapUrl); } }; }
+  else $('#qRoute').hidden = true;
+  const tel = (c.phone || '').replace(/[^\d+]/g, '');
+  const tgUrl = c.telegram || (tel ? 'https://t.me/' + tel : '');
+  if (tgUrl) { $('#qTg').href = tgUrl; $('#callTg').href = tgUrl; [$('#qTg'), $('#callTg')].forEach(a => a.onclick = e => { if (tg) { e.preventDefault(); tg.openTelegramLink(tgUrl); } }); }
+  else { $('#qTg').hidden = true; $('#callTg').hidden = true; }
+  if (tel) {
+    $('#callTel').href = 'tel:' + tel; $('#callNum').textContent = c.phone + ' · без интернета';
+    $('#qCall').onclick = () => { const m = $('#callMenu'); m.hidden = !m.hidden; $('#qCall').setAttribute('aria-expanded', !m.hidden); };
+    $('#copyPhone').onclick = async () => {
+      try { await navigator.clipboard.writeText(c.phone); $('#copyLbl').textContent = 'Номер скопирован'; }
+      catch (ex) { $('#copyLbl').textContent = c.phone; }
+    };
+  } else $('#qCall').hidden = true;
+  if (CREDIT_URL) {
+    const cb = $('#creditBtn'); cb.href = CREDIT_URL; cb.hidden = false;
+    cb.onclick = e => { if (tg) { e.preventDefault(); tg.openTelegramLink(CREDIT_URL); } };
+    $('#creditBy').textContent = 'Сделано ' + CREDIT_NAME; $('#creditBy').hidden = false;
+  }
+  render();
+}).catch(e => { S.msg = 'Не удалось загрузить расписание. ' + e.message; render(); });
+render();
+}
+</script>
+<script>
+/* Скрипт Telegram подгружается без блокировки страницы: приложение стартует, как только он загрузится или через 2 секунды без него */
+(function(){
+  var started = false;
+  function go(){ if (started) return; started = true; boot(); }
+  try {
+    var t = document.createElement('script');
+    t.src = 'https://telegram.org/js/telegram-web-app.js';
+    t.async = true; t.onload = go; t.onerror = go;
+    document.head.appendChild(t);
+  } catch (e) { go(); }
+  setTimeout(go, 2000);
+})();
+</script>
+
+</body>
+</html>
