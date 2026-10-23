@@ -354,6 +354,7 @@ button.link.wl{margin-left:auto;margin-right:auto;font-size:14px}
         <p class="credit-lead">Онлайн-запись в Telegram для барберов, мастеров маникюра, бровей, массажа и салонов.</p>
         <ul class="credit-list"><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Онлайн-запись 24/7 прямо в Telegram</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Напоминания клиентам перед визитом</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Подтверждение визита в одно касание</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Маршрут на карте до двери</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Расписание и цены меняются с телефона</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Переписка с клиентами через бота</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Отзывы клиентов и фото работ</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ваше фото, цвета и название</span></li></ul>
         <a class="credit-btn" id="creditBtn" target="_blank" rel="noopener" hidden>Написать разработчику</a>
+        <small class="muted" id="creditHandle" style="text-align:center;font-size:12px" hidden></small>
       </div>
     </details>
     <small class="credit-by" id="creditBy" hidden></small>
@@ -364,7 +365,24 @@ button.link.wl{margin-left:auto;margin-right:auto;font-size:14px}
 function boot(){
 const API_URL = 'https://script.google.com/macros/s/AKfycby00AbbH2vO03XV8IZ2HMj7RsXchN60twK0iZ-63ctPetVcxFNof8JadNtTdQWGnfYsrw/exec'; // ссылка на веб-приложение Apps Script; пусто = демо-режим
 const DEMO = !API_URL;
-const tg = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) ? Telegram.WebApp : null;
+let tg = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initData) ? Telegram.WebApp : null;
+/* Если мост Телеграма догрузился позже старта — подхватываем его */
+window.__tgReady = () => {
+  if (tg || !(window.Telegram && Telegram.WebApp && Telegram.WebApp.initData)) return;
+  tg = Telegram.WebApp; tg.ready(); tg.expand();
+  document.documentElement.dataset.theme = tg.colorScheme === 'dark' ? 'dark' : 'light';
+};
+const liveTg = () => { window.__tgReady(); return tg; };
+/* Открыть чат или профиль в Телеграме: три способа по очереди */
+function openTgLink(url){
+  const w = liveTg() || (window.Telegram && Telegram.WebApp);
+  if (w) {
+    try { if (w.openTelegramLink) { w.openTelegramLink(url); return; } } catch (e) {}
+    try { if (w.openLink) { w.openLink(url); return; } } catch (e) {}
+  }
+  try { window.location.href = url; } catch (e) { window.open(url, '_blank'); }
+}
+function openExt(url){ const w = liveTg(); if (w && w.openLink) { try { w.openLink(url); return; } catch (e) {} } window.open(url, '_blank'); }
 if (tg) { tg.ready(); tg.expand(); document.documentElement.dataset.theme = tg.colorScheme === 'dark' ? 'dark' : 'light'; }
 
 const $ = s => document.querySelector(s);
@@ -512,7 +530,7 @@ const S = { tab:'book', step:'service', resched:null, waitOk:null, cfg:null, ser
   adm:{ sec:'bookings', list:null, set:null, draft:null, open:null, cancel:null, sent:null, saved:false, err:'', svcs:null, svcSaved:false, sch:null, month:null, day:null, dd:null, daySaved:null, week:null, weekSaved:false, view:'cal', wd:0, toMark:[], back:{ comeback:4, askReviews:true }, stats:null, statMonth:null, rv:null, uploading:false } };
 const hLabel = h => h === 24 ? 'За день' : h === 48 ? 'За 2 дня' : h < 1 ? 'За ' + Math.round(h*60) + ' минут' : 'За ' + String(h).replace('.', ',') + (h === 1 ? ' час' : h < 5 && Number.isInteger(h) ? ' часа' : ' часа');
 const confirmView = c => c === 'придёт' ? ['ok','Придёт'] : c === 'запрошено' ? ['wait','Ждём ответа'] : c === 'отменил' ? ['','Отменил'] : ['','Записан'];
-function openTg(url){ if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank'); }
+function openTg(url){ openTgLink(url); }
 let slotReq = 0;
 
 function render(){
@@ -715,7 +733,7 @@ function renderDone(v){
     </div>
     <button class="cta" id="again">Записаться ещё</button>
     <button class="cta ghost" id="toMine">Мои записи</button>`;
-  v.querySelectorAll('[data-ext]').forEach(a => a.onclick = e => { if (tg) { e.preventDefault(); tg.openLink(a.href); } });
+  v.querySelectorAll('[data-ext]').forEach(a => a.onclick = e => { e.preventDefault(); openExt(a.href); });
   $('#again').onclick = () => { S.step = 'service'; render(); };
   $('#toMine').onclick = () => switchTab('mine');
 }
@@ -866,7 +884,7 @@ function renderAdmin(v){
   v.querySelectorAll('[data-copy]').forEach(b => b.onclick = async () => {
     try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Скопировано'; } catch (e) { b.textContent = b.dataset.copy; }
   });
-  v.querySelectorAll('[data-tg]').forEach(a => a.onclick = e => { if (tg) { e.preventDefault(); openTg('https://t.me/' + a.dataset.tg); } });
+  v.querySelectorAll('[data-tg]').forEach(a => a.onclick = e => { e.preventDefault(); openTgLink('https://t.me/' + a.dataset.tg); });
   v.querySelectorAll('[data-msg]').forEach(b => b.onclick = () => { A.open = A.open === b.dataset.msg ? null : b.dataset.msg; A.sent = null; A.cancel = null; render(); const t = $('#msg-' + A.open); if (t) t.focus(); });
   v.querySelectorAll('[data-send]').forEach(b => b.onclick = async () => {
     const id = b.dataset.send, text = $('#msg-' + id).value;
@@ -1143,15 +1161,15 @@ function applyCfg(c){
   if (c.address) {
     ha.hidden = false;
     ha.innerHTML = '<svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><path d="M6 13s5-4.5 5-8A5 5 0 0 0 1 5c0 3.5 5 8 5 8z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="5" r="1.7" fill="currentColor"/></svg><span>' + esc(c.address) + '</span>';
-    if (c.mapUrl) { ha.href = c.mapUrl; ha.onclick = e => { if (tg) { e.preventDefault(); tg.openLink(c.mapUrl); } }; } else ha.removeAttribute('href');
+    if (c.mapUrl) { ha.href = c.mapUrl; ha.onclick = e => { e.preventDefault(); openExt(c.mapUrl); }; } else ha.removeAttribute('href');
   }
   document.title = c.title;
   $('#hRole').innerHTML = esc(c.subtitle || '') + (c.rating ? ` <span class="hero-rate">★ ${String(c.rating.avg).replace('.', ',')} · ${c.rating.count} ${plural(c.rating.count,'оценка','оценки','оценок')}</span>` : '');
-  if (c.mapUrl) { $('#qRoute').href = c.mapUrl; $('#qRoute').onclick = e => { if (tg) { e.preventDefault(); tg.openLink(c.mapUrl); } }; }
+  if (c.mapUrl) { $('#qRoute').href = c.mapUrl; $('#qRoute').onclick = e => { e.preventDefault(); openExt(c.mapUrl); }; }
   else $('#qRoute').hidden = true;
   const tel = (c.phone || '').replace(/[^\d+]/g, '');
   const tgUrl = c.telegram || (tel ? 'https://t.me/' + tel : '');
-  if (tgUrl) { $('#qTg').href = tgUrl; $('#callTg').href = tgUrl; [$('#qTg'), $('#callTg')].forEach(a => a.onclick = e => { if (tg) { e.preventDefault(); tg.openTelegramLink(tgUrl); } }); }
+  if (tgUrl) { $('#qTg').href = tgUrl; $('#callTg').href = tgUrl; [$('#qTg'), $('#callTg')].forEach(a => a.onclick = e => { e.preventDefault(); openTgLink(tgUrl); }); }
   else { $('#qTg').hidden = true; $('#callTg').hidden = true; }
   if (tel) {
     $('#callTel').href = 'tel:' + tel; $('#callNum').textContent = c.phone + ' · без интернета';
@@ -1163,8 +1181,9 @@ function applyCfg(c){
   } else $('#qCall').hidden = true;
   if (CREDIT_URL) {
     const cb = $('#creditBtn'); cb.href = CREDIT_URL; cb.hidden = false;
-    cb.onclick = e => { if (tg) { e.preventDefault(); tg.openTelegramLink(CREDIT_URL); } };
+    cb.onclick = e => { e.preventDefault(); openTgLink(CREDIT_URL); };
     $('#creditBy').textContent = 'Сделано ' + CREDIT_NAME; $('#creditBy').hidden = false;
+    $('#creditHandle').textContent = 'Или найдите в Telegram: ' + CREDIT_NAME; $('#creditHandle').hidden = false;
   }
   saveCfg(c);
   if (S.tab === 'book' && S.step === 'slot' && S.service && c.avail) {
@@ -1187,7 +1206,7 @@ render();
   try {
     var t = document.createElement('script');
     t.src = 'https://telegram.org/js/telegram-web-app.js';
-    t.async = true; t.onload = go; t.onerror = go;
+    t.async = true; t.onload = function(){ if (window.__tgReady) window.__tgReady(); go(); }; t.onerror = go;
     document.head.appendChild(t);
   } catch (e) { go(); }
   setTimeout(go, 1200);
